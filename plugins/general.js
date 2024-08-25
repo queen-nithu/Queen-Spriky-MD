@@ -66,7 +66,6 @@ async (conn, mek, m, {
             games: '',
             tools: '',
             random: '',
-            logo: '',
 
         };
 
@@ -105,10 +104,6 @@ ${menu.owner}
 > *CONVERT COMMANDS 😇*
 
 ${menu.convert}
-
-> *LOGO COMMANDS 🖼*
-
-${menu.logo}
 
 > *SEARCH COMMANDS 🔎*
 

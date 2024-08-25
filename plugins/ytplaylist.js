@@ -1,4 +1,5 @@
-const { cmd, sleep, getBuffer } = require('../lib')
+const {sleep, getBuffer } = require('../lib/functions')
+const { cmd, commands } = require('../command');
 const ytdl = require('ytdl-secktor')
 const yts = require('secktor-pack')
 const fs = require('fs')
