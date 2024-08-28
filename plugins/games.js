@@ -5,6 +5,7 @@ const { cmd, commands } = require('../command');
 cmd({
     pattern: "trivia",
     desc: "Get a random trivia question.",
+    use: '.trivia',
     category: "games",
     filename: __filename
 },

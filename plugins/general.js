@@ -47,7 +47,7 @@ reply(`${e}`)
 cmd({
     pattern: "menu",
     desc: "Show list of available commands.",
-    category: "gerenal",
+    category: "general",
     filename: __filename
 },
 async (conn, mek, m, {
@@ -66,75 +66,79 @@ async (conn, mek, m, {
             games: '',
             tools: '',
             random: '',
-
         };
 
+        // Populating the menu with commands and their descriptions
         for (let i = 0; i < commands.length; i++) {
             if (commands[i].pattern && !commands[i].dontAddCommandList) {
-            menu[commands[i].category] += `${config.PREFIX}${commands[i].pattern}\n`;
-             }
+                menu[commands[i].category] += `${config.PREFIX}${commands[i].pattern} \n${commands[i].desc || 'No description available'}\n${commands[i].use || 'No use available'}\n`;
             }
+        }
 
-        let madeMenu = `*Hello ${pushname} 👋*
+        let madeMenu = `🌟 *Hello ${pushname}, Welcome to Queen Spriky Bot!* 👋
 
-*Bot Name* : Queen Spriky Bot
-*Owner Name* : Udavin Wijesundara
-*Prefix* : ${config.PREFIX}
-*Uptime:* ${runtime(process.uptime())}
-*Ram usage:* ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${(os.totalmem() / 1024 / 1024).toFixed(2)}MB
-*HostName:* ${os.hostname()}
+🤖 *Bot Name:* Queen Spriky Bot  
+👤 *Owner Name:* Udavin Wijesundara  
+🔖 *Prefix:* ${config.PREFIX}  
+⏱️ *Uptime:* ${runtime(process.uptime())}  
+💾 *RAM Usage:* ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${(os.totalmem() / 1024 / 1024).toFixed(2)}MB  
+🖥️ *Host Name:* ${os.hostname()}
 
-        
-> *GENERAL COMMANDS 🙂‍↕️*
+═════════════════════════
+
+🌐 *GENERAL COMMANDS* 🌐
 
 ${menu.general}
 
-> *DOWNLOAD COMMANDS 📥*
+📥 *DOWNLOAD COMMANDS* 📥
 
 ${menu.download}
 
-> *GROUP COMMANDS 🤠*
+👥 *GROUP COMMANDS* 👥
 
 ${menu.group}
 
-> *OWNER COMMANDS 😎*
+👑 *OWNER COMMANDS* 👑
 
 ${menu.owner}
 
-> *CONVERT COMMANDS 😇*
+🌀 *CONVERT COMMANDS* 🌀
 
 ${menu.convert}
 
-> *SEARCH COMMANDS 🔎*
+🔍 *SEARCH COMMANDS* 🔎
 
 ${menu.search}
 
-> *AI COMMANDS 🤖*
+🤖 *AI COMMANDS* 🤖
 
 ${menu.ai}
 
-> *GAMES COMMANDS 🎯*
+🎮 *GAMES COMMANDS* 🎮
 
 ${menu.games}
 
-> *TOOLS COMMANDS ⚒️*
+🛠️ *TOOLS COMMANDS* ⚒️
 
 ${menu.tools}
 
-> *RANDOM COMMANDS 🤫*
+🎲 *RANDOM COMMANDS* 🎲
 
 ${menu.random}
 
-*QUEEN SPRIKY WHATSAPP BOT*
-         `
+═════════════════════════
 
-         await conn.sendMessage(from,{image:{url:"https://i.ibb.co/02zxH1Y/menu.jpg"},caption:madeMenu},{quoted:mek})
+🌹 *Thank you for using Queen Spriky WhatsApp Bot!*🌹
+`;
+
+        await conn.sendMessage(from, { image: { url: "https://i.ibb.co/02zxH1Y/menu.jpg" }, caption: madeMenu }, { quoted: mek });
 
     } catch (e) {
         console.log(e);
         reply(`${e}`);
     }
 });
+
 
 //-----------------------------------------------System-----------------------------------------------
 cmd({

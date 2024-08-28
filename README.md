@@ -47,7 +47,7 @@ Welcome to the GitHub repository for **Queen Spriky WhatsApp Bot**! This bot is 
 
 <a href="https://replit.com/@sweetheartsorry/Queen-Spriky-WhatsApp-Bot-Pair"><img src="https://img.shields.io/badge/Deploy On Heroku-purple" alt="Deploy On Heroku" width="150" ></a><br>
 <a href="https://replit.com/@sweetheartsorry/Queen-Spriky-WhatsApp-Bot-Pair"><img src="https://img.shields.io/badge/Deploy On Replit-red" alt="Deploy On Replit" width="150"></a><br>
-<a href="https://replit.com/@sweetheartsorry/Queen-Spriky-WhatsApp-Bot-Pair"><img src="https://img.shields.io/badge/Deploy On Codespace-fuchsia" alt="Deploy On Codespace" width="150" ></a>
+<a href="#"><img src="https://img.shields.io/badge/Deploy On Codespace-fuchsia" alt="Deploy On Codespace" width="150" ></a>
 
 ## Run Terminal(Ubuntu)
 
@@ -98,7 +98,6 @@ Start the server
 - **YouTube:** [UW TECH SHOW](https://www.youtube.com/@uwtechshow)
 
 ---
-## Authors
+## Author
 
 - [@Udavin Wijesundara](https://github.com/uwtechshow-official)
-- [@Vima Mods](https://github.com/vimamodz)

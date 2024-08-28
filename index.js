@@ -18,7 +18,7 @@ const { sms } = require('./lib/msg');
 const axios = require('axios');
 const { File } = require('megajs');
 
-const ownerNumber = ['94761192103'];
+const ownerNumber = config.OwnerNumber;
 
 //===================SESSION-AUTH============================
 if (!fs.existsSync(__dirname + '/auth_info_baileys/creds.json')) {
@@ -81,7 +81,7 @@ const prefix = config.PREFIX
       console.log('Plugins installed successfully ✅');
       console.log('Queen Spriky Is Connected To WhatsApp ✅');
 
-      let up = `Queen Spriky Is Connected To WhatsApp ✅\n\nPREFIX: ${prefix} \n Join Our WhatsApp Group\n https://chat.whatsapp.com/Jx2dvOAzNaO3vm5bwVglyC`;
+      let up = `Queen Spriky Is Connected To WhatsApp ✅\n\nPREFIX: ${prefix}\n\nJoin Our WhatsApp Group\n\nhttps://chat.whatsapp.com/Jx2dvOAzNaO3vm5bwVglyC`;
 
       conn.sendMessage(ownerNumber[0] + "@s.whatsapp.net", { 
         image: { url: `https://telegra.ph/file/f4af749bf80a481856828.jpg` }, 
@@ -150,6 +150,13 @@ const prefix = config.PREFIX
         return conn.sendMessage(jid, { audio: await getBuffer(url), caption: caption, mimetype: 'audio/mpeg', ...options }, { quoted: quoted, ...options });
       }
     };
+
+  //Work Type
+
+  if(!isOwner && config.MODE === "private") return
+  if(!isOwner && isGroup && config.MODE === "inbox") return
+  if(!isOwner && !isGroup && config.MODE === "groups") return
+
 
     const events = require('./command');
     const cmdName = isCmd ? body.slice(1).trim().split(" ")[0].toLowerCase() : false;

@@ -8,6 +8,7 @@ cmd({
     pattern: "ai",
     desc: "AI Chat",
     category: "ai",
+    use: '.ai <Your Text>',
     filename: __filename
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
@@ -25,7 +26,8 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 cmd({
     pattern: 'genimage',
     desc: 'Generate Images from Text Prompts',
-    category: 'AI Tools',
+    use: '.genimage <Text Prompt>',
+    category: 'ai',
     filename: __filename
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
@@ -100,3 +102,4 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         reply('An error occurred while processing your request.');
     }
 });
+

@@ -36,6 +36,7 @@ async (conn, mek, m, {
 cmd({
     pattern: "groupdesc",
     desc: "Change the group description.",
+    use: '.groupdesc <New Description>',
     category: "group",
     filename: __filename
 },
@@ -116,6 +117,7 @@ async (conn, mek, m, {
 cmd({
     pattern: "setsubject",
     desc: "Change the group subject.",
+    use: '.setsubject <New Subject>',
     category: "group",
     filename: __filename
 },

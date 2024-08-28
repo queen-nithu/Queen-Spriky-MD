@@ -9,6 +9,7 @@ const axios = require('axios');
 cmd({
     pattern: "calc",
     desc: "Calculate a mathematical expression.",
+    use: ".calc <expression>",
     category: "tools",
     filename: __filename
 },
@@ -21,7 +22,6 @@ async (conn, mek, m, {
         const expression = args.join(' ');
         let result;
 
-        // Safe evaluation function
         try {
             result = new Function(`return ${expression}`)();
         } catch (e) {
@@ -41,6 +41,7 @@ async (conn, mek, m, {
 cmd({
     pattern: "currency",
     desc: "Convert an amount from one currency to another.",
+    use: ".currency <amount> <source currency> <target currency>",
     category: "tools",
     filename: __filename
 },
@@ -76,6 +77,7 @@ cmd({
     pattern: "translate",
     desc: "Translate text to another language.",
     category: "tools",
+    use: ".translate <language code> <text>",
     filename: __filename
 },
 async (conn, mek, m, { from, args, reply }) => {
@@ -107,6 +109,7 @@ async (conn, mek, m, { from, args, reply }) => {
 cmd({
     pattern: "reverse",
     desc: "Reverse the provided text.",
+    use: ".reverse <text>",
     category: "tools",
     filename: __filename
 },

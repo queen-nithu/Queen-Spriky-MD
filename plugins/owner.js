@@ -28,6 +28,7 @@ async (conn, mek, m, {
 cmd({
     pattern: "setbio",
     desc: "Set bot's profile bio.",
+    use: '.setbio <New Bio>',
     category: "owner",
     filename: __filename
 },
