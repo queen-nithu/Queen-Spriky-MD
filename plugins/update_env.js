@@ -6,6 +6,7 @@ cmd({
     pattern: "update",
     alias: ["updateenv"],
     desc: "Check and update environment variables",
+    react: "🔧", 
     category: "owner",
     filename: __filename,
 },
@@ -57,7 +58,6 @@ async (conn, mek, m, { from, q, reply, isOwner }) => {
         const envVar = await EnvVar.findOne({ key: key });
 
         if (!envVar) {
-            // If the variable does not exist, fetch and list all existing env vars
             const allEnvVars = await EnvVar.find({});
             const envList = allEnvVars.map(env => `${env.key}: ${env.value}`).join('\n');
             return reply(`❌ *The environment variable ${key} does not exist.*\n\n*Here are the existing environment variables:*\n\n${envList}`);

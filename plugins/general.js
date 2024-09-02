@@ -11,11 +11,12 @@ cmd({
     pattern: "alive",
     desc: "Check bot online or no.",
     category: "general",
+    react: "❤️",
     filename: __filename
 },
 async(conn, mek, m,{from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
 try{
-return await conn.sendMessage(from,{image: {url:'https://telegra.ph/file/f4af749bf80a481856828.jpg'},caption: 'Hi Queen Spriky WhatsApp Bot Is Alive!\nType *.menu* To See All Commands.\nOwner Number: ${config.owner} Join Our WhatsApp Group\nhttps://chat.whatsapp.com/Jx2dvOAzNaO3vm5bwVglyC'},{quoted: mek})
+return await conn.sendMessage(from,{image: {url:'https://telegra.ph/file/f4af749bf80a481856828.jpg'},caption: 'Hi Queen Spriky WhatsApp Bot Is Alive!\nType *.menu* To See All Commands.\nJoin Our WhatsApp Group\nhttps://chat.whatsapp.com/Jx2dvOAzNaO3vm5bwVglyC'},{quoted: mek})
 }catch(e){
 console.log(e)
 reply(`${e}`)
@@ -26,6 +27,7 @@ reply(`${e}`)
 cmd({
     pattern: "restart",
     desc: "restart the bot",
+    react: "🔄",
     category: "general",
     filename: __filename
 },
@@ -48,6 +50,7 @@ cmd({
     pattern: "menu",
     desc: "Show list of available commands.",
     category: "general",
+    react: "🧸",
     filename: __filename
 },
 async (conn, mek, m, {
@@ -71,7 +74,7 @@ async (conn, mek, m, {
         // Populating the menu with commands and their descriptions
         for (let i = 0; i < commands.length; i++) {
             if (commands[i].pattern && !commands[i].dontAddCommandList) {
-                menu[commands[i].category] += `${config.PREFIX}${commands[i].pattern} \n${commands[i].desc || 'No description available'}\n${commands[i].use || 'No use available'}\n`;
+                menu[commands[i].category] += `*Command:* ${config.PREFIX}${commands[i].pattern}\n*Description:* ${commands[i].desc || 'No description available'}\n*Use:* ${commands[i].use || 'No use available'}\n\n`;
             }
         }
 
@@ -131,7 +134,7 @@ ${menu.random}
 🌹 *Thank you for using Queen Spriky WhatsApp Bot!*🌹
 `;
 
-        await conn.sendMessage(from, { image: { url: "https://i.ibb.co/02zxH1Y/menu.jpg" }, caption: madeMenu }, { quoted: mek });
+        await conn.sendMessage(from, { image: { url: "https://telegra.ph/file/114314c265001f88c620b.jpg" }, caption: madeMenu }, { quoted: mek });
 
     } catch (e) {
         console.log(e);
@@ -146,6 +149,7 @@ cmd({
     alias: ["status", "botinfo", "host"],
     desc: "Check uptime, memory, cpu, platform and more.",
     category: "general",
+    react: "💻",
     filename: __filename
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
@@ -162,3 +166,31 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         await reply(`❌ An error occurred: ${e.message}`);
     }
 });
+
+//Delete Message
+
+cmd({
+    pattern: "del",
+    desc: "delete message",
+    react: "🗑️",
+    category: "main",
+    use: '.del',
+    filename: __filename
+},
+async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isSachintha, isSavi, isSadas, isMani, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
+    try{
+    const key = {
+                    remoteJid: m.chat,
+                    fromMe: false,
+                    id: m.quoted.id,
+                    participant: m.quoted.sender
+                }
+                await conn.sendMessage(m.chat, { delete: key })
+} catch (e) {
+reply('Error !!')
+l(e)
+}
+})
+
+//
+

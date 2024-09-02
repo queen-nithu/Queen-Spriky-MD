@@ -13,6 +13,7 @@ cmd({
     desc: "Search Wikipedia for information.",
     use: ".wiki <query>",
     category: "search",
+    react: "🔎",  
     filename: __filename
 },
 async (conn, mek, m, { from, args, reply }) => {
@@ -37,6 +38,7 @@ async (conn, mek, m, { from, args, reply }) => {
 cmd({
         pattern: "couplepp",
         category: "search",
+        react: "🔎",
         desc: "Sends two couples pics.",
         filename: __filename,
     },

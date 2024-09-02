@@ -1,12 +1,16 @@
 const { cmd, commands } = require('../command');
 const { tiktokdl } = require('@bochilteam/scraper');
+const { getMoviesSearch } = require('sinhalasub.lk');
 const fg = require('api-dylux');
 const yts = require('yt-search');
 const axios = require('axios');
+const fetch = require('node-fetch');
 const { fetchJson } = require('../lib/functions');
 const { lookup } = require('mime-types');
 const fs = require('fs');
 const { File } = require('megajs');
+const path = require('path');
+
 
 // <========FETCH API URL========>
 let baseUrl;
@@ -20,6 +24,7 @@ cmd({
     pattern: 'song',
     desc: 'Download Songs',
     use: '.song <Song Name>',
+    react: "📥",
     category: 'download',
     filename: __filename
 },
@@ -48,7 +53,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         let downloadUrl = down.dl_url;
 
         // Send Audio File
-        await conn.sendMessage(from, { document: { url:downloadUrl }, caption: 'Downloaded By Queen Spriky WhatsApp Bot', mimetype: 'audio/mpeg', fileName:data.title + ".mp3"}, { quoted: mek });
+        await conn.sendMessage(from, { document: { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'audio/mpeg', fileName:data.title + ".mp3"}, { quoted: mek });
 
     } catch (e) {
         console.error(e);
@@ -61,6 +66,7 @@ cmd({
     pattern: 'video',
     desc: 'Download Video',
     use: '.video <Video Name>',
+    react: "📥",
     category: 'download',
     filename: __filename
 },
@@ -86,7 +92,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
         let down = await fg.ytv(url);
         let downloadUrl = down.dl_url;
-        await conn.sendMessage(from, { document: { url:downloadUrl }, caption: 'Downloaded By Queen Spriky WhatsApp Bot', mimetype: 'video/mp4', fileName:data.title + ".mp4" }, { quoted: mek });
+        await conn.sendMessage(from, { document: { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'video/mp4', fileName:data.title + ".mp4" }, { quoted: mek });
 
     } catch (e) {
         console.error(e);
@@ -100,6 +106,7 @@ cmd({
     pattern: 'fb',
     desc: 'Download Facebook video',
     use: '.fb <Video URL>',
+    react: "📥",
     category: 'download',
     filename: __filename
 }, 
@@ -115,7 +122,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         const response = await axios.get(apiUrl);
         if (response.data.status === 'success ✅') {
             const videoLink = response.data.data.sd;
-            const customCaption = `*Download By Queen Spriky WhatsApp Bot*`;
+            const customCaption = `*Queen Spriky MD*`;
 
             await conn.sendMessage(from, {
                 video: { url: videoLink },
@@ -135,6 +142,7 @@ cmd({
     pattern: 'gdrive',
     desc: 'Download Google Drive file',
     use: '.gdrive <file_url>',
+    react: "📥",
     category: 'download',
     filename: __filename
 }, 
@@ -151,7 +159,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         const response = await axios.get(apiUrl);
         if (response.data.status === 'success ✅') {
             const fileData = response.data.data;
-            const customCaption = `*Download By Queen Spriky WhatsApp Bot*`;
+            const customCaption = `*Queen Spriky MD*`;
 
             if (fileData.mimeType.startsWith('image/')) {
                 await conn.sendMessage(from, {
@@ -183,6 +191,7 @@ cmd({
     pattern: "twitter",
     desc: "download tw videos",
     use: ".twitter <url>",
+    react: "📥",
     category: "download",
     filename: __filename
 },
@@ -191,7 +200,7 @@ async(conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, send
         if (!q || !q.startsWith("https://")) return reply("Please provide a valid Twitter URL.");  
         let data = await fetchJson(`${baseUrl}/api/twitterdl?url=${q}`);
         reply("Downloading...");
-        await conn.sendMessage(from, { video: { url: data.data.data.HD }, mimetype: "video/mp4", caption: `- QUALITY HD\n\n> *Downloaded By Queen Spriky WhatsApp Bot*` }, { quoted: mek });
+        await conn.sendMessage(from, { video: { url: data.data.data.HD }, mimetype: "video/mp4", caption: `- QUALITY HD\n*Queen Spriky MD*` }, { quoted: mek });
     } catch (e) {
         console.log(e);
         reply(`${e}`);
@@ -204,6 +213,7 @@ cmd({
     pattern: "mediafire",
     desc: "Download files from Mediafire using a URL.",
     use: ".mediafire <url>",
+    react: "📥",
     category: "download",
     filename: __filename
 },
@@ -221,7 +231,7 @@ async (conn, mek, m, {
             document: { url: data.data.link_1 },
             fileName: data.data.name,
             mimetype: data.data.file_type,
-            caption: `*Downloaded By Queen Spriky WhatsApp Bot*`
+            caption: `*Queen Spriky MD*`
         }, { quoted: mek });
     } catch (e) {
         console.log(e);
@@ -235,6 +245,7 @@ cmd({
     pattern: 'tiktok',
     desc: 'Download TikTok video',
     use: '.tiktok <Video URL>',
+    react: "📥",
     category: 'download',
     filename: __filename
 },
@@ -270,7 +281,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
             {
                 video: { url: videoUrl },
                 mimetype: mimeType || 'video/mp4',
-                caption: `*Downloaded By Queen Spriky WhatsApp Bot*`
+                caption: `*Queen Spriky MD*`
             },
             { quoted: mek }
         );
@@ -282,62 +293,163 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 });
 
 //Mega Download
+
 cmd({
     pattern: 'mega',
     desc: 'Download files from Mega',
     use: '.mega <Mega URL>',
+    react: "📥",
     category: 'download',
     filename: __filename
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
-    const megaUrl = args.join(' ');
+const megaUrl = args.join(' ');
 
-    if (!megaUrl) {
-        return reply(`${command} <Mega URL>`);
+if (!megaUrl) {
+    return reply(`${command} <Mega URL>`);
+}
+
+try {
+    const file = File.fromURL(megaUrl);
+    await file.loadAttributes();
+
+    if (file.size >= 500000000) { // 500MB limit
+        return reply('Error: File size is too large (Maximum Size: 500MB)');
     }
 
+    const downloadingMessage = `🌩️ Downloading file... Please wait.`;
+    await reply(downloadingMessage);
+
+    const caption = `*Queen Spriky MD*`;
+
+    const data = await file.downloadBuffer();
+    const fileExtension = path.extname(file.name).toLowerCase();
+
+    const mimeTypes = {
+        '.mp4': 'video/mp4',
+        '.pdf': 'application/pdf',
+        '.zip': 'application/zip',
+        '.rar': 'application/x-rar-compressed',
+        '.7z': 'application/x-7z-compressed',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+    };
+
+    // Determine the mimetype, defaulting to application/octet-stream if not found
+    let mimetype = mimeTypes[fileExtension] || 'application/octet-stream';
+
+    // Using the `sendMessage` method to send the document with the correct mimetype
+    await conn.sendMessage(
+        from,
+        { document: data, mimetype: mimetype, fileName: file.name },
+        { quoted: m, caption : '*Queen Spriky MD*' }
+    );
+} catch (error) {
+    console.error('Error:', error.message);
+    await reply(`Error: ${error.message}`);
+}
+});
+
+//Gitclone
+
+cmd({
+    pattern: 'gitclone',
+    desc: 'Clone a GitHub repository',
+    use: '.gitclone <GitHub URL>',
+    react: "📥",
+    category: 'download',
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+
+    const regex = /(?:https|git)(?::\/\/|@)github\.com[\/:]([^\/:]+)\/(.+)/i;
+
+    if (!args[0]) {
+        return reply(`Example usage: .gitclone https://github.com/BochilGaming/games-wabot`);
+    }
+
+    if (!regex.test(args[0])) {
+        return reply('Please provide a valid GitHub repository URL!');
+    }
+
+    let [_, user, repo] = args[0].match(regex) || [];
+    repo = repo.replace(/.git$/, '');
+
+    // GitHub API URL to download the repository as a zipball
+    let url = `https://api.github.com/repos/${user}/${repo}/zipball`;
+
+    // Notify user that the repository is being downloaded
+    await reply('*Please wait, sending the repository...*');
+
     try {
-        const file = File.fromURL(megaUrl);
-        await file.loadAttributes();
+        // Fetching the filename from GitHub's response headers
+        let response = await fetch(url, { method: 'HEAD' });
+        let contentDisposition = response.headers.get('content-disposition');
+        
+        // Extract filename using content-disposition header if available, else use default name
+        let filename = contentDisposition ? contentDisposition.match(/attachment; filename=(.*)/)[1] : `${repo}.zip`;
 
-        if (file.size >= 500000000) { // 500MB limit
-            return reply('Error: File size is too large (Maximum Size: 500MB)');
-        }
-
-        const downloadingMessage = `🌩️ Downloading file... Please wait.`;
-        await reply(downloadingMessage);
-
-        const caption = `*_Successfully downloaded..._*\nFile: ${file.name}\nSize: ${formatBytes(file.size)}`;
-
-        const data = await file.downloadBuffer();
-        const fileExtension = path.extname(file.name).toLowerCase();
-
-        const mimeTypes = {
-            '.mp4': 'video/mp4',
-            '.pdf': 'application/pdf',
-            '.zip': 'application/zip',
-            '.rar': 'application/x-rar-compressed',
-            '.7z': 'application/x-7z-compressed',
-            '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
-            '.png': 'image/png',
-        };
-
-        let mimetype = mimeTypes[fileExtension] || 'application/octet-stream';
-
-        await conn.sendFile(from, data, file.name, caption, m, null, { mimetype, asDocument: true });
+        // Sending the repository as a file to the user
+        await conn.sendMessage(
+            from,
+            {
+                document: { url: url },
+                mimetype: 'application/zip',
+                fileName: filename,
+                caption: `*Repository ${user}/${repo} downloaded successfully!*`
+            },
+            { quoted: mek }
+        );
     } catch (error) {
-        console.error('Error:', error.message);
-        await reply(`Error: ${error.message}`);
+        console.error('Error downloading GitHub repository:', error);
+        await reply(`❌ An error occurred: ${error.message}`);
     }
 });
 
-function formatBytes(bytes) {
-    if (bytes === 0) return '0 Bytes';
+//Movie Download
 
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+cmd({
+    pattern: 'movie',
+    desc: 'Fetch movie details',
+    use: '.movie <Movie Name>',
+    category: 'search',
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, reply }) => {
+    const movieName = args.join(' ');
 
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
+    if (!movieName) {
+        return reply('Please provide a movie name. Example: `.movie Thalainagaram`');
+    }
+
+    try {
+        const { result } = await getMoviesSearch(movieName);
+
+        if (!result) {
+            return reply('No movie details found.');
+        }
+
+        const { title, imdb, date, category, description, image, dl_links } = result;
+
+        let message = `*Title:* ${title}\n`;
+        message += `*IMDB Rating:* ${imdb}\n`;
+        message += `*Release Date:* ${date}\n`;
+        message += `*Category:* ${category.join(', ')}\n`;
+        message += `*Description:* ${description}\n\n`;
+
+        await conn.sendMessage(
+            from,
+            {
+                image: { url: image },
+                caption: message
+            },
+            { quoted: mek }
+        );
+
+    } catch (error) {
+        console.error('Error fetching movie details', error.message);
+        await reply('An error occurred while fetching');
+    }
+});
+

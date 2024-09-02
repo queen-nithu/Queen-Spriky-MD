@@ -5,6 +5,7 @@ const { cmd, commands } = require('../command');
 cmd({
     pattern: "admins",
     desc: "Get a list of group admins.",
+    react: "👥",
     category: "group",
     filename: __filename
 },
@@ -37,6 +38,7 @@ cmd({
     pattern: "groupdesc",
     desc: "Change the group description.",
     use: '.groupdesc <New Description>',
+    react: "👥",
     category: "group",
     filename: __filename
 },
@@ -64,6 +66,7 @@ async (conn, mek, m, {
 cmd({
     pattern: "groupinfo",
     desc: "Get information about the group.",
+    react: "👥",
     category: "group",
     filename: __filename
 },
@@ -94,6 +97,7 @@ async (conn, mek, m, {
 cmd({
     pattern: "grouplink",
     desc: "Get the group's invite link.",
+    react: "👥",
     category: "group",
     filename: __filename
 },
@@ -118,6 +122,7 @@ cmd({
     pattern: "setsubject",
     desc: "Change the group subject.",
     use: '.setsubject <New Subject>',
+    react: "👥",
     category: "group",
     filename: __filename
 },
@@ -147,6 +152,7 @@ async (conn, mek, m, {
 cmd({
     pattern: "tagall",
     desc: "Mention all group members.",
+    react: "👥",
     category: "group",
     filename: __filename
 },
@@ -172,6 +178,7 @@ async (conn, mek, m, { from, reply }) => {
 cmd({
     pattern: "promote",
     desc: "Promote a member to admin.",
+    react: "👥",
     category: "group",
     filename: __filename
 },
@@ -191,5 +198,82 @@ async (conn, mek, m, {
     } catch (e) {
         console.log(e);
         return reply(`Error: ${e.message}`);
+    }
+});
+
+//---------------------------------------------Hide Tag --------------------------------------------
+
+cmd({
+    pattern: "hidetag",
+    desc: "Tags everyperson of group without mentioning their numbers",
+    react: "👥",
+    category: "group",
+    filename: __filename,
+    use: '<text>',
+},
+async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isSachintha, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
+try { if (!m.isGroup) return reply(tlang().group);
+if (!m.isGroup) return reply('only for groups');
+    conn.sendMessage(m.chat, {
+        text: q ? text : "",
+        mentions: participants.map((a) => a.id),
+    }, {
+        quoted: mek ,messageId:genMsgId() 
+    });
+} catch (e) {
+reply('Error !!')
+l(e)
+}
+})
+
+//---------------------------------------------Kick --------------------------------------------
+
+cmd({
+    pattern: "kick",
+    desc: "Kicks replied/quoted user from group.",
+    react: "👥",
+    category: "group",
+    filename: __filename,
+    use: '<quote|reply|number>',
+  },           
+      async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname,isSachintha, isSavi, isSadas, isMani, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
+     try {
+         if (!m.isGroup) return reply('only for groups');
+    if (!isBotAdmins) return reply(`I can't do that. give group admin`);
+    
+      const user = m.quoted.sender;
+      if (!user) return reply('*Please give me a user to kick ❗*');
+      await conn.groupParticipantsUpdate(m.chat, [user], "remove");
+     reply(`${user} *has been kicked out of the group!*`);
+    } catch (e) {
+  reply('Error !!')
+  l(e)
+  }
+  })
+
+  //---------------------------------------------Demote Admin --------------------------------------------
+
+  cmd({
+    pattern: "demote",
+    desc: "demote admin to a member",
+    react: "👥",
+    category: "group",
+    use: '.demote',
+    filename: __filename
+},
+async (conn, mek, m, { from, prefix, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {                   
+    try {
+        if (!m.isGroup) return reply('only for groups');
+        if (!isBotAdmins) return reply(`I can't do that. give group admin`);
+                                  
+        let users = mek.mentionedJid ? mek.mentionedJid[0] : mek.quoted ? mek.quoted.sender : q.replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+        await conn.groupParticipantsUpdate(mek.chat, [users], 'demote')
+            .then((res) => reply(jsonformat(res)))
+            .catch((err) => reply(jsonformat(err)));
+
+        await conn.sendMessage(from, { text: 'Done' }, { quoted: mek }); 
+    } catch (e) {
+        reply('Error !!');
+        l(e);
     }
 });

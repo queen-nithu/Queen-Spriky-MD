@@ -10,6 +10,7 @@ cmd({
     pattern: "calc",
     desc: "Calculate a mathematical expression.",
     use: ".calc <expression>",
+    react: "🛠️",    
     category: "tools",
     filename: __filename
 },
@@ -42,6 +43,7 @@ cmd({
     pattern: "currency",
     desc: "Convert an amount from one currency to another.",
     use: ".currency <amount> <source currency> <target currency>",
+    react: "🛠️", 
     category: "tools",
     filename: __filename
 },
@@ -76,6 +78,7 @@ async (conn, mek, m, {
 cmd({
     pattern: "translate",
     desc: "Translate text to another language.",
+    react: "🛠️", 
     category: "tools",
     use: ".translate <language code> <text>",
     filename: __filename
@@ -109,6 +112,7 @@ async (conn, mek, m, { from, args, reply }) => {
 cmd({
     pattern: "reverse",
     desc: "Reverse the provided text.",
+    react: "🛠️", 
     use: ".reverse <text>",
     category: "tools",
     filename: __filename

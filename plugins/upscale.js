@@ -52,6 +52,7 @@ async function upscale(buffer, size = 2, anime = false) {
 cmd({
     pattern: 'upscale',
     desc: 'Upscale an image by a given size',
+    react: "🆙", 
     category: 'tools',
     filename: __filename
 },

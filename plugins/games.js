@@ -6,6 +6,7 @@ cmd({
     pattern: "trivia",
     desc: "Get a random trivia question.",
     use: '.trivia',
+    react: "🎮",
     category: "games",
     filename: __filename
 },

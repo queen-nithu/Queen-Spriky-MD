@@ -8,6 +8,7 @@ cmd({
     pattern: "fact",
     desc: "Get a random fun fact.",
     category: "random",
+    react: "🎲",
     filename: __filename
 },
 async (conn, mek, m, {
@@ -32,6 +33,7 @@ cmd({
     pattern: "joke",
     desc: "Get a random joke.",
     category: "random",
+    react: "🎲",
     filename: __filename
 },
 async (conn, mek, m, {
@@ -56,6 +58,7 @@ cmd({
     pattern: "quote",
     desc: "Get a random inspirational quote.",
     category: "random",
+    react: "🎲",
     filename: __filename
 },
 async (conn, mek, m, {

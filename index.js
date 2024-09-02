@@ -8,6 +8,7 @@ const {
   Browsers
 } = require('@whiskeysockets/baileys');
 
+const l = console.log
 const { getBuffer, getGroupAdmins } = require('./lib/functions');
 const fs = require('fs');
 const P = require('pino');
@@ -18,7 +19,7 @@ const { sms } = require('./lib/msg');
 const axios = require('axios');
 const { File } = require('megajs');
 
-const ownerNumber = config.OwnerNumber;
+const ownerNumber = ['94761192103'];
 
 //===================SESSION-AUTH============================
 if (!fs.existsSync(__dirname + '/auth_info_baileys/creds.json')) {
@@ -100,34 +101,35 @@ const prefix = config.PREFIX
     if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_READ_STATUS === "true") {
       await conn.readMessages([mek.key]);
     }
-    const m = sms(conn, mek);
-    const type = getContentType(mek.message);
-    const content = JSON.stringify(mek.message);
-    const from = mek.key.remoteJid;
-    const quoted = type == 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null ? mek.message.extendedTextMessage.contextInfo.quotedMessage || [] : [];
-    const body = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : (type == 'imageMessage') && mek.message.imageMessage.caption ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption ? mek.message.videoMessage.caption : '';
-    const isCmd = body.startsWith(prefix);
-    const command = isCmd ? body.slice(prefix.length).trim().split(' ').shift().toLowerCase() : '';
-    const args = body.trim().split(/ +/).slice(1);
-    const q = args.join(' ');
-    const isGroup = from.endsWith('@g.us');
-    const sender = mek.key.fromMe ? (conn.user.id.split(':')[0] + '@s.whatsapp.net' || conn.user.id) : (mek.key.participant || mek.key.remoteJid);
-    const senderNumber = sender.split('@')[0];
-    const botNumber = conn.user.id.split(':')[0];
-    const pushname = mek.pushName || 'Sin Nombre';
-    const isMe = botNumber.includes(senderNumber);
-    const isOwner = ownerNumber.includes(senderNumber) || isMe;
+
+    const m = sms(conn, mek)
+    const type = getContentType(mek.message)
+    const content = JSON.stringify(mek.message)
+    const from = mek.key.remoteJid
+    const quoted = type == 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null ? mek.message.extendedTextMessage.contextInfo.quotedMessage || [] : []
+    const body = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : (type == 'imageMessage') && mek.message.imageMessage.caption ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption ? mek.message.videoMessage.caption : ''
+    const isCmd = body.startsWith(prefix)
+    const command = isCmd ? body.slice(prefix.length).trim().split(' ').shift().toLowerCase() : ''
+    const args = body.trim().split(/ +/).slice(1)
+    const q = args.join(' ')
+    const isGroup = from.endsWith('@g.us')
+    const sender = mek.key.fromMe ? (conn.user.id.split(':')[0]+'@s.whatsapp.net' || conn.user.id) : (mek.key.participant || mek.key.remoteJid)
+    const senderNumber = sender.split('@')[0]
+    const botNumber = conn.user.id.split(':')[0]
+    const pushname = mek.pushName || 'Sin Nombre'
+    const isMe = botNumber.includes(senderNumber)
+    const isOwner = ownerNumber.includes(senderNumber) || isMe
     const botNumber2 = await jidNormalizedUser(conn.user.id);
-    const groupMetadata = isGroup ? await conn.groupMetadata(from).catch(e => {}) : '';
-    const groupName = isGroup ? groupMetadata.subject : '';
-    const participants = isGroup ? await groupMetadata.participants : '';
-    const groupAdmins = isGroup ? await getGroupAdmins(participants) : '';
-    const isBotAdmins = isGroup ? groupAdmins.includes(botNumber2) : false;
-    const isAdmins = isGroup ? groupAdmins.includes(sender) : false;
-    const isReact = (tekes) => m.message.reactionMessage ? true : false;
+    const groupMetadata = isGroup ? await conn.groupMetadata(from).catch(e => {}) : ''
+    const groupName = isGroup ? groupMetadata.subject : ''
+    const participants = isGroup ? await groupMetadata.participants : ''
+    const groupAdmins = isGroup ? await getGroupAdmins(participants) : ''
+    const isBotAdmins = isGroup ? groupAdmins.includes(botNumber2) : false
+    const isAdmins = isGroup ? groupAdmins.includes(sender) : false
     const reply = (teks) => {
-      conn.sendMessage(from, { text: teks }, { quoted: mek });
-    };
+    conn.sendMessage(from, { text: teks }, { quoted: mek })
+    }
+    
 
     conn.sendFileUrl = async (jid, url, caption, quoted, options = {}) => {
       let mime = '';
@@ -151,12 +153,10 @@ const prefix = config.PREFIX
       }
     };
 
-  //Work Type
-
-  if(!isOwner && config.MODE === "private") return
-  if(!isOwner && isGroup && config.MODE === "inbox") return
-  if(!isOwner && !isGroup && config.MODE === "groups") return
-
+      //Work Type
+      if(!isOwner && config.MODE === "private") return
+      if(!isOwner && isGroup && config.MODE === "inbox") return
+      if(!isOwner && !isGroup && config.MODE === "groups") return
 
     const events = require('./command');
     const cmdName = isCmd ? body.slice(1).trim().split(" ")[0].toLowerCase() : false;
