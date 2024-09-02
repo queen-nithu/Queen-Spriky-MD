@@ -82,10 +82,10 @@ const prefix = config.PREFIX
       console.log('Plugins installed successfully ✅');
       console.log('Queen Spriky Is Connected To WhatsApp ✅');
 
-      let up = `Queen Spriky Is Connected To WhatsApp ✅\n\nPREFIX: ${prefix}\n\nJoin Our WhatsApp Group\n\nhttps://chat.whatsapp.com/Jx2dvOAzNaO3vm5bwVglyC`;
+      let up = '*QUEEN SPRIKY MD CONNECTED SUCCESSFULLY ❤️*\n\nBot Prefix : ${prefix}\n\nWhatsApp Group :\nhttps://chat.whatsapp.com/KQZ2CxCLL5D268bh6bmBMg\n\nGithub :https://github.com/uwtechshow-official/Queen-Spriky-MD\n\n`Developed By : Udavin`';
 
       conn.sendMessage(ownerNumber[0] + "@s.whatsapp.net", { 
-        image: { url: `https://telegra.ph/file/f4af749bf80a481856828.jpg` }, 
+        image: { url: `https://telegra.ph/file/c9709034c54486a4b17e4.jpg` }, 
         caption: up 
       });
     }

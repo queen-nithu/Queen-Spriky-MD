@@ -132,9 +132,11 @@ ${menu.random}
 ═════════════════════════
 
 🌹 *Thank you for using Queen Spriky WhatsApp Bot!*🌹
+
+> 👨‍💻 *Developer:* Udavin Wijesundara
 `;
 
-        await conn.sendMessage(from, { image: { url: "https://telegra.ph/file/114314c265001f88c620b.jpg" }, caption: madeMenu }, { quoted: mek });
+        await conn.sendMessage(from, { image: { url: "https://telegra.ph/file/a648a2baa9c3f7d7bae25.jpg" }, caption: madeMenu }, { quoted: mek });
 
     } catch (e) {
         console.log(e);
