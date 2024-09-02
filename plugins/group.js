@@ -46,11 +46,7 @@ async (conn, mek, m, {
     from, args, quoted, body, isCmd, command, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
 }) => {
     try {
-
-        if (!isOwner && !groupAdmins) {
-            return reply("❌ You must be a group admin to use this command.");
-        }
-
+        if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
         if (args.length === 0) return reply('Please provide a new group description.');
 
         const newDesc = args.join(' '); // Join all arguments as the new description
@@ -135,10 +131,7 @@ async (conn, mek, m, {
     from, args, quoted, body, isCmd, command, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
 }) => {
     try {
-        if (!isOwner && !groupAdmins) {
-            return reply("❌ You must be a group admin to use this command.");
-        }
-
+        if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
         if (args.length === 0) return await conn.sendMessage(from, {
             text: 'Please provide a new group subject.'
         }, { quoted: mek });
@@ -167,10 +160,7 @@ cmd({
 },
 async (conn, mek, m, { from, reply }) => {
     try {
-        if (!isOwner && !groupAdmins) {
-            return reply("❌ You must be a group admin to use this command.");
-        }
-
+        if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
         const groupMetadata = await conn.groupMetadata(from);
         const members = groupMetadata.participants.map(participant => `@${participant.id.split('@')[0]}`).join('\n');
         const mentions = groupMetadata.participants.map(p => p.id);
@@ -199,13 +189,11 @@ async (conn, mek, m, {
     from, quoted, mentionedJid, reply
 }) => {
     try {
-        if (!isOwner && !groupAdmins) {
-            return reply("❌ You must be a group admin to use this command.");
-        }
 
         const user = quoted ? quoted.sender : (mentionedJid ? mentionedJid[0] : null);
 
         if (!user) return reply('Please mention a user or reply to their message to promote.');
+        if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
 
         await conn.groupMakeAdmin(from, [user]);
         return await conn.sendMessage(from, {
@@ -230,11 +218,9 @@ cmd({
 },
 async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isSachintha, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
 try { 
-    if (!isOwner && !groupAdmins) {
-        return reply("❌ You must be a group admin to use this command.");
-    }
     if (!m.isGroup) return reply(tlang().group);
 if (!m.isGroup) return reply('only for groups');
+if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
     conn.sendMessage(m.chat, {
         text: q ? text : "",
         mentions: participants.map((a) => a.id),
@@ -259,12 +245,10 @@ cmd({
   },           
       async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname,isSachintha, isSavi, isSadas, isMani, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
      try {
-        if (!isOwner && !groupAdmins) {
-            return reply("❌ You must be a group admin to use this command.");
-        }
 
          if (!m.isGroup) return reply('only for groups');
     if (!isBotAdmins) return reply(`I can't do that. give group admin`);
+    if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
     
       const user = m.quoted.sender;
       if (!user) return reply('*Please give me a user to kick ❗*');
@@ -288,11 +272,9 @@ cmd({
 },
 async (conn, mek, m, { from, prefix, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {                   
     try {
-        if (!isOwner && !groupAdmins) {
-            return reply("❌ You must be a group admin to use this command.");
-        }
         if (!m.isGroup) return reply('only for groups');
         if (!isBotAdmins) return reply(`I can't do that. give group admin`);
+        if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
                                   
         let users = mek.mentionedJid ? mek.mentionedJid[0] : mek.quoted ? mek.quoted.sender : q.replace(/[^0-9]/g, '') + '@s.whatsapp.net';
         await conn.groupParticipantsUpdate(mek.chat, [users], 'demote')
