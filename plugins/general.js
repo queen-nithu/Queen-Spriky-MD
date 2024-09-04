@@ -47,7 +47,7 @@ reply(`${e}`)
 //-----------------------------------------------Menu-----------------------------------------------
 
 cmd({
-    pattern: "menu",
+    pattern: "menu2",
     desc: "Show list of available commands.",
     category: "general",
     react: "🧸",
@@ -143,8 +143,6 @@ ${menu.random}
         reply(`${e}`);
     }
 });
-
-
 //-----------------------------------------------System-----------------------------------------------
 cmd({
     pattern: "system",
@@ -194,5 +192,23 @@ l(e)
 }
 })
 
-//
+//Jid
+cmd({
+    pattern: "jid",
+    desc: "Get the JID of the current chat",
+    react: "🆔",
+    category: "main",
+    use: '.jid',
+    filename: __filename
+},
+async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isSachintha, isSavi, isSadas, isMani, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        const chatJid = from;
+        reply(`JID of this chat is: ${chatJid}`);
+    } catch (e) {
+        reply('Error while retrieving the JID!');
+        l(e);
+    }
+});
+
 

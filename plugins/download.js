@@ -1,5 +1,6 @@
 const { cmd, commands } = require('../command');
 const { tiktokdl } = require('@bochilteam/scraper');
+const getFbVideoInfo = require("fb-downloader-scrapper")
 const { getMoviesSearch } = require('sinhalasub.lk');
 const fg = require('api-dylux');
 const yts = require('yt-search');
@@ -52,8 +53,11 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         let down = await fg.yta(url);
         let downloadUrl = down.dl_url;
 
-        // Send Audio File
+        // Send Document File
         await conn.sendMessage(from, { document: { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'audio/mpeg', fileName:data.title + ".mp3"}, { quoted: mek });
+
+        // Send Audio File
+        //await conn.sendMessage(from, { audio: { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'audio/mpeg'},{ quoted: mek });
 
     } catch (e) {
         console.error(e);
@@ -92,7 +96,10 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
         let down = await fg.ytv(url);
         let downloadUrl = down.dl_url;
+        //Send As Document
         await conn.sendMessage(from, { document: { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'video/mp4', fileName:data.title + ".mp4" }, { quoted: mek });
+        //Send As Video
+        //await conn.sendMessage(from, { video : { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'video/mp4'},{ quoted: mek });
 
     } catch (e) {
         console.error(e);
@@ -137,7 +144,88 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     }
 });
 
+
+//Buttons
+/*cmd({
+    pattern: "fb",
+    alias: ["facebook"],
+    use: '.fb <Fb url>',
+    react: "🎥",
+    desc: 'Download videos from facebook',
+    category: "download",
+    filename: __filename
+
+},
+
+    async (conn, m, mek, { from, q, reply }) => {
+        if (!q || !q.includes('facebook.com')) return await reply('*Please enter a valid facebook url!*');
+        const url = q.replace(/\?mibextid=[^&]*//*, '');
+        getFbVideoInfo(url)
+            .then((result) => {
+                const msg = `\`✦ QUEEN SPRIKY MD FB VIDEO DOWNLOADER ✦\`
+`
+
+                let buttons = [{
+                    name: "cta_url",
+                    buttonParamsJson: JSON.stringify({
+                        display_text: 'Watch on Facebook',
+                        url: q,
+                        merchant_url: q
+                    }),
+                },
+                {
+                    name: "quick_reply",
+                    buttonParamsJson: JSON.stringify({
+                        display_text: "SD Quality",
+                        id: ".downfb " + result.sd
+                    }),
+                },
+                {
+                    name: "quick_reply",
+                    buttonParamsJson: JSON.stringify({
+                        display_text: "HD Quality",
+                        id: ".downfb " + result.hd
+                    }),
+                }
+                ]
+                let message = {
+                    image: result.thumbnail,
+                    header: '',
+                    footer: '*QUEEN SPRIKY MD*',
+                    body: msg
+
+                }
+                return conn.sendButtonMessage(from, buttons, m, message)
+            }).catch((err) => {
+                console.log(err)
+            })
+
+
+    });
+
+
+cmd({
+    pattern: "downfb",
+    react: "🎥",
+    dontAddCommandList: true,
+    filename: __filename
+},
+
+    async (conn, mek, m, { from, q, reply }) => {
+        try {
+            if (!q) return await reply('*Not Found!*')
+
+            await conn.sendMessage(from, { video: { url: q } }, { quoted: mek })
+            await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
+
+        } catch (e) {
+            reply('*Error !!*')
+            console.log(e)
+        }
+    })*/
+
 //Google Drive
+
 cmd({
     pattern: 'gdrive',
     desc: 'Download Google Drive file',
@@ -187,6 +275,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 });
 
 // Twitter DL (X)
+
 cmd({
     pattern: "twitter",
     desc: "download tw videos",
@@ -209,6 +298,7 @@ async(conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, send
 
 
 //mediafire dl
+
 cmd({
     pattern: "mediafire",
     desc: "Download files from Mediafire using a URL.",
@@ -452,4 +542,3 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         await reply('An error occurred while fetching');
     }
 });
-

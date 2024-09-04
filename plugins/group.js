@@ -287,3 +287,174 @@ async (conn, mek, m, { from, prefix, l, quoted, body, isCmd, command, args, q, i
         l(e);
     }
 });
+
+//Add
+
+cmd({
+    pattern: "add",
+    desc: "Add a member to the group",
+    react: "👥",
+    category: "group",
+    filename: __filename
+}, async (conn, mek, m, { isGroup, isBotAdmins, isAdmins, args, reply }) => {
+    try {
+        if (!isGroup) return reply("Only for groups.");
+        if (!isBotAdmins) return reply("I can't do that. give group admin");
+        if (!isAdmins) return reply("You Must Be Admin For Use This Command");
+
+        const userToAdd = args[0] + '@s.whatsapp.net'; // Phone number format should be in international format
+
+        if (!userToAdd) return reply("Please provide a user to add.");
+
+        await conn.groupParticipantsUpdate(mek.key.remoteJid, [userToAdd], 'add');
+
+        reply("User Added Successfully");
+
+    } catch (e) {
+        console.log(e);
+        reply(`Error: ${e}`);
+    }
+});
+
+//mute
+
+cmd({
+    pattern: "mute",
+    desc: "Mute the group",
+    react: "👥",
+    category: "group",
+    filename: __filename
+}, async (conn, mek, m, { isGroup, isBotAdmins, isAdmins, args, reply }) => {
+    try {
+        if (!isGroup) return reply("Only for groups.");
+        if (!isBotAdmins) return reply("I can't do that. give group admin");
+        if (!isAdmins) return reply("You Must Be Admin For Use This Command");
+
+        await conn.groupSettingUpdate(mek.key.remoteJid, 'announcement');
+
+        reply("Group Muted");
+
+    } catch (e) {
+        console.log(e);
+        reply(`Error: ${e}`);
+    }
+});
+
+//Unmute
+cmd({
+    pattern: "unmute",
+    desc: "Unmute the group",
+    react: "👥",
+    category: "group",
+    filename: __filename
+}, async (conn, mek, m, { isGroup, isBotAdmins, isAdmins, args, reply }) => {
+    try {
+        if (!isGroup) return reply("Only for groups.");
+        if (!isBotAdmins) return reply("I can't do that. give group admin");
+        if (!isAdmins) return reply("You Must Be Admin For Use This Command");
+
+        await conn.groupSettingUpdate(mek.key.remoteJid, 'not_announcement');
+
+        reply("Group Unmuted");
+
+    } catch (e) {
+        console.log(e);
+        reply(`Error: ${e}`);
+    }
+});
+
+//unlock group
+
+cmd({
+    pattern: "unlock",
+    desc: "Allow all participants to modify the group's settings",
+    react: "🔓",
+    category: "group",
+    filename: __filename
+}, async (conn, mek, m, { isGroup, isBotAdmins, isAdmins, args, reply }) => {
+    try {
+        if (!isGroup) return reply("This command is only for groups.");
+        if (!isBotAdmins) return reply("I need to be a group admin to perform this action.");
+        if (!isAdmins) return reply("You must be an admin to use this command.");
+
+        await conn.groupSettingUpdate(mek.key.remoteJid, 'unlocked');
+
+        reply("Group settings unlocked. All participants can modify the group's settings.");
+
+    } catch (e) {
+        console.log(e);
+        reply(`Error: ${e}`);
+    }
+});
+
+//lock group
+
+cmd({
+    pattern: "lock",
+    desc: "Only allow admins to modify the group's settings",
+    react: "🔒",
+    category: "group",
+    filename: __filename
+}, async (conn, mek, m, { isGroup, isBotAdmins, isAdmins, args, reply }) => {
+    try {
+        if (!isGroup) return reply("This command is only for groups.");
+        if (!isBotAdmins) return reply("I need to be a group admin to perform this action.");
+        if (!isAdmins) return reply("You must be an admin to use this command.");
+
+        await conn.groupSettingUpdate(mek.key.remoteJid, 'locked');
+
+        reply("Group settings locked. Only admins can modify the group's settings.");
+
+    } catch (e) {
+        console.log(e);
+        reply(`Error: ${e}`);
+    }
+});
+
+//Automaticaly Add Specific Country Members
+
+cmd({
+    pattern: ".approve",
+    desc: "Automatically approve Specific Country users in the waiting list",
+    react: "✅",
+    category: "group",
+    filename: __filename
+}, async (conn, mek, m, { isGroup, isBotAdmins, isAdmins, args, reply }) => {
+    try {
+        if (!isGroup) return reply("This command is only for groups.");
+        if (!isBotAdmins) return reply("I need to be a group admin to perform this action.");
+        if (!isAdmins) return reply("You must be an admin to use this command.");
+
+        const groupJid = mek.key.remoteJid;
+
+        // Get the list of participants who requested to join
+        const response = await conn.groupRequestParticipantsList(groupJid);
+        
+        if (response.length === 0) {
+            return reply("No participants are in the waiting list.");
+        }
+
+        // Filter users with +94 country code
+        const toAddUsers = response.filter(user => user.jid.startsWith(config.AUTO_ADD_Country_Code));
+
+        if (toAddUsers.length === 0) {
+            return reply("No +94 users found in the waiting list.");
+        }
+
+        const userJids = toAddUsers.map(user => user.jid);
+
+        // Approve the +94 users
+        const approveResponse = await conn.groupRequestParticipantsUpdate(
+            groupJid, 
+            userJids,
+            "approve"
+        );
+
+        console.log(approveResponse);
+        reply(`Approved the following +94 users:\n${userJids.join("\n")}`);
+
+    } catch (e) {
+        console.log(e);
+        reply(`Error: ${e}`);
+    }
+});

@@ -19,7 +19,7 @@ const { sms } = require('./lib/msg');
 const axios = require('axios');
 const { File } = require('megajs');
 
-const ownerNumber = ['94761192103'];
+const ownerNumber = [`${config.Owner}`];
 
 //===================SESSION-AUTH============================
 if (!fs.existsSync(__dirname + '/auth_info_baileys/creds.json')) {
@@ -82,7 +82,7 @@ const prefix = config.PREFIX
       console.log('Plugins installed successfully ✅');
       console.log('Queen Spriky Is Connected To WhatsApp ✅');
 
-      let up = '*QUEEN SPRIKY MD CONNECTED SUCCESSFULLY ❤️*\n\nBot Prefix : ${prefix}\n\nWhatsApp Group :\nhttps://chat.whatsapp.com/KQZ2CxCLL5D268bh6bmBMg\n\nGithub :https://github.com/uwtechshow-official/Queen-Spriky-MD\n\n`Developed By : Udavin`';
+      let up = '*QUEEN SPRIKY MD CONNECTED SUCCESSFULLY ❤️*\n\nWhatsApp Group :\nhttps://chat.whatsapp.com/KQZ2CxCLL5D268bh6bmBMg\n\nGithub :https://github.com/uwtechshow-official/Queen-Spriky-MD\n\n`Developed By : Udavin`';
 
       conn.sendMessage(ownerNumber[0] + "@s.whatsapp.net", { 
         image: { url: `https://telegra.ph/file/c9709034c54486a4b17e4.jpg` }, 

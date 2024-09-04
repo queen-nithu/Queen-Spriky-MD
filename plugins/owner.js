@@ -74,3 +74,27 @@ reply('Error !!')
 l(e)
 }
 })
+
+// Settings
+
+cmd({
+    pattern: "settings",
+    alias: ["setting"],
+    desc: "Get Bots Commands",
+    react: "👥",
+    category: "owner",
+    filename: __filename
+}, 
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if(!isOwner) return
+        return await conn.sendMessage(from, {
+            image: { url: 'https://telegra.ph/file/e14efb3b113b8a9d8f407.jpg' },
+            caption: '*Queen Spriky MD Settings* ⚙️\n\n*Chenge Prefix*\n.update PERFIX: {Your Prefix} (.,$#%&)\n\n*Auto Status Seen*\n.update AUTO_READ_STATUS: true or false\n\n*Mode*\n.update MODE: private, public, index or group'
+        }, { quoted: mek });
+    } catch (e) {
+        console.log(e);
+        reply(`${e}`);
+    }
+})
+
