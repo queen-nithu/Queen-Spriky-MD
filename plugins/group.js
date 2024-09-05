@@ -79,7 +79,6 @@ async (conn, mek, m, {
         const groupInfo = `
 *Group Name:* ${groupMetadata.subject}
 *Group Description:* ${groupMetadata.desc || 'No description'}
-*Owner:* ${groupMetadata.owner}
 *Members:* ${groupMetadata.participants.length}
 *Created At:* ${new Date(groupMetadata.creation * 1000).toLocaleString()}
         `;
@@ -128,7 +127,7 @@ cmd({
     filename: __filename
 },
 async (conn, mek, m, {
-    from, args, quoted, body, isCmd, command, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
 }) => {
     try {
         if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
@@ -158,7 +157,9 @@ cmd({
     category: "group",
     filename: __filename
 },
-async (conn, mek, m, { from, reply }) => {
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
     try {
         if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
         const groupMetadata = await conn.groupMetadata(from);
@@ -186,25 +187,26 @@ cmd({
     filename: __filename
 },
 async (conn, mek, m, {
-    from, quoted, mentionedJid, reply
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
 }) => {
     try {
-
-        const user = quoted ? quoted.sender : (mentionedJid ? mentionedJid[0] : null);
+        const user = quoted ? quoted.sender : (m.mentionedJid ? m.mentionedJid[0] : null);
 
         if (!user) return reply('Please mention a user or reply to their message to promote.');
-        if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
+        if (!isAdmins) return reply('You Must Be Admin To Use This Command');
 
         await conn.groupMakeAdmin(from, [user]);
         return await conn.sendMessage(from, {
-            text: `@${user.split('@')[0]} has been promoted to admin.`
-        }, { quoted: mek, contextInfo: { mentionedJid: [user] } });
+            text: `@${user.split('@')[0]} has been promoted to admin.`,
+            mentions: [user]
+        }, { quoted: mek });
 
     } catch (e) {
         console.log(e);
         return reply(`Error: ${e.message}`);
     }
 });
+
 
 //---------------------------------------------Hide Tag --------------------------------------------
 
@@ -216,7 +218,9 @@ cmd({
     filename: __filename,
     use: '<text>',
 },
-async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isSachintha, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
+(conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
 try { 
     if (!m.isGroup) return reply(tlang().group);
 if (!m.isGroup) return reply('only for groups');
@@ -242,23 +246,25 @@ cmd({
     category: "group",
     filename: __filename,
     use: '<quote|reply|number>',
-  },           
-      async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname,isSachintha, isSavi, isSadas, isMani, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply}) => {
-     try {
-
-         if (!m.isGroup) return reply('only for groups');
-    if (!isBotAdmins) return reply(`I can't do that. give group admin`);
-    if (!isAdmins) return reply(`You Must Be Admin For Use This Command`);
+},           
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
+    try {
+        if (!m.isGroup) return reply('This command is only for groups.');
+        if (!isBotAdmins) return reply(`I can't do that. Please make me a group admin.`);
+        if (!isAdmins) return reply(`You must be an admin to use this command.`);
     
-      const user = m.quoted.sender;
-      if (!user) return reply('*Please give me a user to kick ❗*');
-      await conn.groupParticipantsUpdate(m.chat, [user], "remove");
-     reply(`${user} *has been kicked out of the group!*`);
+        const user = quoted ? quoted.sender : null;
+        if (!user) return reply('Please reply to a user to kick them.');
+
+        await conn.groupParticipantsUpdate(m.chat, [user], "remove");
+        reply(`${user} has been kicked out of the group!`);
     } catch (e) {
-  reply('Error !!')
-  l(e)
-  }
-  })
+        console.log(e);
+        reply('Error occurred while trying to kick the user.');
+    }
+});
 
   //---------------------------------------------Demote Admin --------------------------------------------
 
