@@ -457,7 +457,6 @@ async (conn, mek, m, {
             return;
         }
 
-        // Fetch APK details from the API
         let data = await fetchJson(`https://prabath-md-api.up.railway.app/api/apkdl?q=${q}&apikey=eebc1d5060`);
 
         if (data.status !== "success ✅") {
@@ -465,21 +464,20 @@ async (conn, mek, m, {
             return;
         }
 
-        reply("📥 Fetching APK details...");
+        reply("📥 Downloading Apk...");
 
         const { icon, name, package: pkg, lastup, size, dllink } = data.data;
 
-        // Send APK details with the download link
         await conn.sendMessage(from, {
             image: { url: icon },
             caption: `*APK Download*\n\n*Name*: ${name}\n*Package*: ${pkg}\n*Size*: ${size} MB\n*Last Updated*: ${lastup}\n\nDownloading the APK file...`
         }, { quoted: mek });
 
-        // Send the APK file as a document
         await conn.sendMessage(from, {
             document: { url: dllink },
             mimetype: 'application/vnd.android.package-archive',
-            fileName: `${name}.apk`
+            fileName: `${name}.apk`,
+            caption: `*Queen Spriky MD*`
         }, { quoted: mek });
 
     } catch (e) {
@@ -487,3 +485,40 @@ async (conn, mek, m, {
         reply(`${e.message || e}`);
     }
 });
+
+//Youtube Video Download
+
+/*cmd({
+    pattern: "ytmp4",
+    desc: "Download YouTube videos using a URL.",
+    use: ".ytmp4 <url>",
+    react: "📥",
+    category: "download",
+    filename: __filename
+},
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
+    try {
+        if (!q || !q.startsWith("https://")) {
+            reply("Please provide a valid YouTube URL.");
+            return;
+        }
+
+        let data = await fetchJson(`https://prabath-md-api.up.railway.app/api/ytmp4?url=${q}&apikey=eebc1d5060`);
+        
+        if (data.status !== "success ✅") {
+            reply("Failed to download YouTube video.");
+            return;
+        }
+        let videoData = data.data.downloadUrl;
+
+        reply("📥 Downloading YouTube video in the best available quality...");
+
+        await conn.sendMessage(from, { video : { url:videoData }, caption: '*Queen Spriky MD*', mimetype: 'video/mp4'},{ quoted: mek });
+
+    } catch (e) {
+        console.log(e);
+        reply(`${e.message || e}`);
+    }
+});*/

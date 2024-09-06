@@ -132,3 +132,85 @@ async (conn, mek, m, {
         return reply(`Error: ${e.message}`);
     }
 });
+
+cmd({
+    pattern: "news",
+    desc: "Get the latest Esana news.",
+    use: ".news",
+    react: "📰",
+    category: "news",
+    filename: __filename
+},
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
+    try {
+        let data = await fetchJson(`https://prabath-md-api.up.railway.app/api/esananews?apikey=eebc1d5060`);
+
+        if (data.status !== "success ✅") {
+            reply("Failed to fetch Esana news.");
+            return;
+        }
+
+        const { title, image, desc, date, url, full_desc } = data.data;
+        const newsMessage = `📰 *${title}*\n\n${desc}\n\n🕒 Date: ${date}\n🔗 [Read More](${url})\n\n📖 Full Description: \n${full_desc}`;
+
+        await conn.sendMessage(from, {
+            image: { url: image },
+            caption: newsMessage
+        }, { quoted: mek });
+
+    } catch (e) {
+        console.log(e);
+        reply(`${e.message || e}`);
+    }
+});
+
+
+//Stylish Text
+
+cmd({
+    pattern: "styletext",
+    desc: "Get styled text.",
+    use: ".styletext <query>",
+    react: "🔤",
+    category: "search",
+    filename: __filename
+},
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
+    try {
+        if (!q) {
+            reply("Please provide a query.");
+            return;
+        }
+
+        let response = await fetchJson(`https://prabath-md-api.up.railway.app/api/styletext?q=${q}&apikey=eebc1d5060`);
+        
+        if (response.status !== "success ✅") {
+            reply("Failed to retrieve styled text.");
+            return;
+        }
+
+        let styles = response.data.map(item => item.result).slice(0, 5);
+
+        if (styles.length === 0) {
+            reply("No styled text found.");
+            return;
+        }
+
+        for (let i = 0; i < styles.length; i++) {
+            setTimeout(async () => {
+                await conn.sendMessage(from, {
+                    text: styles[i],
+                    caption: `Styled text - Query: ${q}`
+                }, { quoted: mek });
+            }, i * 1000);
+        }
+
+    } catch (error) {
+        console.error("Error fetching styled text:", error.response ? error.response.data : error.message);
+        reply("An error occurred while fetching styled text.");
+    }
+});
