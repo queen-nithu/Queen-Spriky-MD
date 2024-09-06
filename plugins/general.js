@@ -47,7 +47,7 @@ reply(`${e}`)
 //-----------------------------------------------Menu-----------------------------------------------
 
 cmd({
-    pattern: "menu2",
+    pattern: "menu",
     desc: "Show list of available commands.",
     category: "general",
     react: "🧸",

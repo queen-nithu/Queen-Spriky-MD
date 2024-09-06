@@ -68,7 +68,7 @@ const thumbnailUrl = 'https://telegra.ph/file/bdc5a5b7af8bea3139d42.jpg';
 cmd({
     pattern: "yts",
     alias: ["yta","ytv","yt"],
-    desc: "Search and display up to 100 YouTube video details",
+    desc: "Search and display up to 10 YouTube video details",
     category: "search",
     react: "🔎",
     use: ".yts <query>",
@@ -79,7 +79,7 @@ async (conn, mek, m, { from, q, reply }) => {
         if (!q) return reply("Please type a Name or Url... 🤖");
 
         const search = await yts(q);
-        const videos = search.videos.slice(0, 100); // Get only the first 100 videos
+        const videos = search.videos.slice(0, 10); // Get only the first 100 videos
 
         if (videos.length === 0) return reply("No videos found for your query.");
 

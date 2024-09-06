@@ -20,6 +20,7 @@ let baseUrl;
     baseUrl = baseUrlGet.api;
 })();
 
+
 // -------- Song Download --------
 cmd({
     pattern: 'song',
@@ -144,86 +145,6 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     }
 });
 
-
-//Buttons
-/*cmd({
-    pattern: "fb",
-    alias: ["facebook"],
-    use: '.fb <Fb url>',
-    react: "🎥",
-    desc: 'Download videos from facebook',
-    category: "download",
-    filename: __filename
-
-},
-
-    async (conn, m, mek, { from, q, reply }) => {
-        if (!q || !q.includes('facebook.com')) return await reply('*Please enter a valid facebook url!*');
-        const url = q.replace(/\?mibextid=[^&]*//*, '');
-        getFbVideoInfo(url)
-            .then((result) => {
-                const msg = `\`✦ QUEEN SPRIKY MD FB VIDEO DOWNLOADER ✦\`
-`
-
-                let buttons = [{
-                    name: "cta_url",
-                    buttonParamsJson: JSON.stringify({
-                        display_text: 'Watch on Facebook',
-                        url: q,
-                        merchant_url: q
-                    }),
-                },
-                {
-                    name: "quick_reply",
-                    buttonParamsJson: JSON.stringify({
-                        display_text: "SD Quality",
-                        id: ".downfb " + result.sd
-                    }),
-                },
-                {
-                    name: "quick_reply",
-                    buttonParamsJson: JSON.stringify({
-                        display_text: "HD Quality",
-                        id: ".downfb " + result.hd
-                    }),
-                }
-                ]
-                let message = {
-                    image: result.thumbnail,
-                    header: '',
-                    footer: '*QUEEN SPRIKY MD*',
-                    body: msg
-
-                }
-                return conn.sendButtonMessage(from, buttons, m, message)
-            }).catch((err) => {
-                console.log(err)
-            })
-
-
-    });
-
-
-cmd({
-    pattern: "downfb",
-    react: "🎥",
-    dontAddCommandList: true,
-    filename: __filename
-},
-
-    async (conn, mek, m, { from, q, reply }) => {
-        try {
-            if (!q) return await reply('*Not Found!*')
-
-            await conn.sendMessage(from, { video: { url: q } }, { quoted: mek })
-            await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
-
-        } catch (e) {
-            reply('*Error !!*')
-            console.log(e)
-        }
-    })*/
-
 //Google Drive
 
 cmd({
@@ -332,53 +253,36 @@ async (conn, mek, m, {
 //Tiktok Download
 
 cmd({
-    pattern: 'tiktok',
-    desc: 'Download TikTok video',
-    use: '.tiktok <Video URL>',
+    pattern: "tiktok",
+    desc: "Download TikTok videos using a URL.",
+    use: ".tiktok <url>",
     react: "📥",
-    category: 'download',
+    category: "download",
     filename: __filename
 },
-async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
-    
-    const tiktokUrl = args.join(' ');
-
-    if (!tiktokUrl) {
-        return reply('*Please provide a TikTok video URL.*');
-    }
-
-    if (!tiktokUrl.match(/tiktok/gi)) {
-        return reply('*Please provide a valid TikTok video URL.*');
-    }
-
-    const oldTime = new Date();
-    const replyMessage = `⌛ Downloading TikTok video...`;
-    await reply(replyMessage);
-
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
     try {
-        const { author, video, description } = await tiktokdl(tiktokUrl);
-        const videoUrl = video.no_watermark2 || video.no_watermark || 'https://tikcdn.net' + video.no_watermark_raw || video.no_watermark_hd;
-
-        if (!videoUrl) {
-            return reply('*Failed to fetch TikTok video.*');
+        if (!q || !q.startsWith("https://")) {
+            reply("Please provide a valid TikTok URL.");
+            return;
+        }
+        let data = await fetchJson(`https://prabath-md-api.up.railway.app/api/tiktokdlv2?url=${q}&apikey=eebc1d5060`);
+        
+        if (data.status !== "success ✅") {
+            reply("Failed to download TikTok video.");
+            return;
         }
 
-        const mimeType = await lookup(videoUrl);
-
-        // Sending the video
-        await conn.sendMessage(
-            from,
-            {
-                video: { url: videoUrl },
-                mimetype: mimeType || 'video/mp4',
-                caption: `*Queen Spriky MD*`
-            },
-            { quoted: mek }
-        );
-
-    } catch (error) {
-        console.error('Error handling TikTok command:', error);
-        await reply(`❌ An error occurred: ${error.message}`);
+        reply("🧚 Downloading TikTok video...");
+        await conn.sendMessage(from, {
+            video: { url: data.data.data.play },
+            caption: `*Queen Spriky MD*`
+        }, { quoted: mek });
+    } catch (e) {
+        console.log(e);
+        reply(`${e.message || e}`);
     }
 });
 
@@ -403,7 +307,7 @@ try {
     const file = File.fromURL(megaUrl);
     await file.loadAttributes();
 
-    if (file.size >= 500000000) { // 500MB limit
+    if (file.size >= 500000000) { 
         return reply('Error: File size is too large (Maximum Size: 500MB)');
     }
 
@@ -426,10 +330,7 @@ try {
         '.png': 'image/png',
     };
 
-    // Determine the mimetype, defaulting to application/octet-stream if not found
     let mimetype = mimeTypes[fileExtension] || 'application/octet-stream';
-
-    // Using the `sendMessage` method to send the document with the correct mimetype
     await conn.sendMessage(
         from,
         { document: data, mimetype: mimetype, fileName: file.name },
@@ -466,21 +367,16 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     let [_, user, repo] = args[0].match(regex) || [];
     repo = repo.replace(/.git$/, '');
 
-    // GitHub API URL to download the repository as a zipball
     let url = `https://api.github.com/repos/${user}/${repo}/zipball`;
 
-    // Notify user that the repository is being downloaded
     await reply('*Please wait, sending the repository...*');
 
     try {
-        // Fetching the filename from GitHub's response headers
         let response = await fetch(url, { method: 'HEAD' });
         let contentDisposition = response.headers.get('content-disposition');
         
-        // Extract filename using content-disposition header if available, else use default name
         let filename = contentDisposition ? contentDisposition.match(/attachment; filename=(.*)/)[1] : `${repo}.zip`;
 
-        // Sending the repository as a file to the user
         await conn.sendMessage(
             from,
             {
@@ -540,5 +436,54 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     } catch (error) {
         console.error('Error fetching movie details', error.message);
         await reply('An error occurred while fetching');
+    }
+});
+
+// -------- APK Download --------
+cmd({
+    pattern: "apk",
+    desc: "Download APK files using a package name.",
+    use: ".apkdl <package_name>",
+    react: "📦",
+    category: "download",
+    filename: __filename
+},
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
+    try {
+        if (!q) {
+            reply("Please provide a valid APK package name.");
+            return;
+        }
+
+        // Fetch APK details from the API
+        let data = await fetchJson(`https://prabath-md-api.up.railway.app/api/apkdl?q=${q}&apikey=eebc1d5060`);
+
+        if (data.status !== "success ✅") {
+            reply("Failed to fetch APK details.");
+            return;
+        }
+
+        reply("📥 Fetching APK details...");
+
+        const { icon, name, package: pkg, lastup, size, dllink } = data.data;
+
+        // Send APK details with the download link
+        await conn.sendMessage(from, {
+            image: { url: icon },
+            caption: `*APK Download*\n\n*Name*: ${name}\n*Package*: ${pkg}\n*Size*: ${size} MB\n*Last Updated*: ${lastup}\n\nDownloading the APK file...`
+        }, { quoted: mek });
+
+        // Send the APK file as a document
+        await conn.sendMessage(from, {
+            document: { url: dllink },
+            mimetype: 'application/vnd.android.package-archive',
+            fileName: `${name}.apk`
+        }, { quoted: mek });
+
+    } catch (e) {
+        console.log(e);
+        reply(`${e.message || e}`);
     }
 });
