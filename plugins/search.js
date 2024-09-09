@@ -67,7 +67,6 @@ const thumbnailUrl = 'https://telegra.ph/file/bdc5a5b7af8bea3139d42.jpg';
 
 cmd({
     pattern: "yts",
-    alias: ["yta","ytv","yt"],
     desc: "Search and display up to 10 YouTube video details",
     category: "search",
     react: "🔎",

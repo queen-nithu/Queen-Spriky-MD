@@ -250,8 +250,6 @@ async (conn, mek, m, {
     }
 });
 
-//Tiktok Download
-
 cmd({
     pattern: "tiktok",
     desc: "Download TikTok videos using a URL.",
@@ -268,16 +266,19 @@ async (conn, mek, m, {
             reply("Please provide a valid TikTok URL.");
             return;
         }
-        let data = await fetchJson(`https://prabath-md-api.up.railway.app/api/tiktokdlv2?url=${q}&apikey=eebc1d5060`);
-        
-        if (data.status !== "success ✅") {
+        let response = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/tiktok?url=${q}&apikey=Zexxabot`);
+
+        if (response.status !== 200) {
             reply("Failed to download TikTok video.");
             return;
         }
 
-        reply("🧚 Downloading TikTok video...");
+        let videoUrl = response.result.result.play;
+        let videoTitle = response.result.result.title;
+        
+        reply("📥 Downloading TikTok video...");
         await conn.sendMessage(from, {
-            video: { url: data.data.data.play },
+            video: { url: videoUrl },
             caption: `*Queen Spriky MD*`
         }, { quoted: mek });
     } catch (e) {
@@ -285,6 +286,48 @@ async (conn, mek, m, {
         reply(`${e.message || e}`);
     }
 });
+
+//Tiktok Audio 
+
+cmd({
+    pattern: "tiktokaudio",
+    desc: "Download TikTok audio using a URL.",
+    use: ".tiktokaudio <url>",
+    react: "🎶",
+    category: "download",
+    filename: __filename
+},
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
+    try {
+        if (!q || !q.startsWith("https://")) {
+            reply("Please provide a valid TikTok URL.");
+            return;
+        }
+        let response = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/tiktok?url=${q}&apikey=Zexxabot`);
+
+        if (response.status !== 200) {
+            reply("Failed to download TikTok audio.");
+            return;
+        }
+
+        let audioUrl = response.result.result.music;
+        let audioTitle = response.result.result.music_info.title;
+        
+        reply("🎶 Downloading TikTok audio...");
+        await conn.sendMessage(from, {
+            audio: { url: audioUrl },
+            mimetype: 'audio/mp4',
+            ptt: false,
+            caption: `*Queen Spriky MD*`
+        }, { quoted: mek });
+    } catch (e) {
+        console.log(e);
+        reply(`${e.message || e}`);
+    }
+});
+
 
 //Mega Download
 
@@ -439,59 +482,12 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     }
 });
 
-// -------- APK Download --------
+//image download
+
 cmd({
-    pattern: "apk",
-    desc: "Download APK files using a package name.",
-    use: ".apkdl <package_name>",
-    react: "📦",
-    category: "download",
-    filename: __filename
-},
-async (conn, mek, m, {
-    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
-}) => {
-    try {
-        if (!q) {
-            reply("Please provide a valid APK package name.");
-            return;
-        }
-
-        let data = await fetchJson(`https://prabath-md-api.up.railway.app/api/apkdl?q=${q}&apikey=eebc1d5060`);
-
-        if (data.status !== "success ✅") {
-            reply("Failed to fetch APK details.");
-            return;
-        }
-
-        reply("📥 Downloading Apk...");
-
-        const { icon, name, package: pkg, lastup, size, dllink } = data.data;
-
-        await conn.sendMessage(from, {
-            image: { url: icon },
-            caption: `*APK Download*\n\n*Name*: ${name}\n*Package*: ${pkg}\n*Size*: ${size} MB\n*Last Updated*: ${lastup}\n\nDownloading the APK file...`
-        }, { quoted: mek });
-
-        await conn.sendMessage(from, {
-            document: { url: dllink },
-            mimetype: 'application/vnd.android.package-archive',
-            fileName: `${name}.apk`,
-            caption: `*Queen Spriky MD*`
-        }, { quoted: mek });
-
-    } catch (e) {
-        console.log(e);
-        reply(`${e.message || e}`);
-    }
-});
-
-//Youtube Video Download
-
-/*cmd({
-    pattern: "ytmp4",
-    desc: "Download YouTube videos using a URL.",
-    use: ".ytmp4 <url>",
+    pattern: "img",
+    desc: "Download Pinterest images using a query.",
+    use: ".pinterest <query>",
     react: "📥",
     category: "download",
     filename: __filename
@@ -500,25 +496,70 @@ async (conn, mek, m, {
     from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
 }) => {
     try {
-        if (!q || !q.startsWith("https://")) {
-            reply("Please provide a valid YouTube URL.");
+        if (!q) {
+            reply("Please provide a query to search for Pinterest images.");
             return;
         }
 
-        let data = await fetchJson(`https://prabath-md-api.up.railway.app/api/ytmp4?url=${q}&apikey=eebc1d5060`);
+        let data = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/pinterest?q=${q}&apikey=Zexxabot`);
         
-        if (data.status !== "success ✅") {
-            reply("Failed to download YouTube video.");
+        if (data.status !== 200) {
+            reply("Failed to download Pinterest images.");
             return;
         }
-        let videoData = data.data.downloadUrl;
 
-        reply("📥 Downloading YouTube video in the best available quality...");
-
-        await conn.sendMessage(from, { video : { url:videoData }, caption: '*Queen Spriky MD*', mimetype: 'video/mp4'},{ quoted: mek });
-
+        reply("🧚 Downloading Pinterest images...");
+        
+        for (let i = 0; i < data.result.length; i++) {
+            await conn.sendMessage(from, {
+                image: { url: data.result[i] },
+                caption: `*Queen Spriky MD*`
+            }, { quoted: mek });
+        }
+        
     } catch (e) {
         console.log(e);
         reply(`${e.message || e}`);
     }
-});*/
+});
+
+//Pintrest Download
+cmd({
+    pattern: "pinterest",
+    desc: "Download Pinterest images using a query.",
+    use: ".pinterest <query>",
+    react: "📥",
+    category: "download",
+    filename: __filename
+},
+async (conn, mek, m, {
+    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
+}) => {
+    try {
+        if (!q) {
+            reply("Please provide a query to search for Pinterest images.");
+            return;
+        }
+
+        let data = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/pinterest?q=${q}&apikey=Zexxabot`);
+        
+        if (data.status !== 200) {
+            reply("Failed to download Pinterest images.");
+            return;
+        }
+
+        reply("🧚 Downloading Pinterest images...");
+        
+        for (let i = 0; i < data.result.length; i++) {
+            await conn.sendMessage(from, {
+                image: { url: data.result[i] },
+                caption: `*Queen Spriky MD*`
+            }, { quoted: mek });
+        }
+        
+    } catch (e) {
+        console.log(e);
+        reply(`${e.message || e}`);
+    }
+});
+
