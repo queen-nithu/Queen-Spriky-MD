@@ -3,6 +3,7 @@ const { cmd, commands } = require('../command');
 const fetch = require('node-fetch');
 const {fetchJson} = require('../lib/functions');
 const axios = require('axios');
+const scraper = require("../lib/scraper");
 //-----------------------------------------------AI Chat-----------------------------------------------
 cmd({
     pattern: "ai",
@@ -102,6 +103,35 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     } catch (e) {
         console.error(e);
         reply('An error occurred while processing your request.');
+    }
+});
+
+cmd({
+    pattern: "ld",
+    desc: "Chat With Lalaland AI Model.",
+    use: ".ld <query>",
+    category: "ai",
+    react: "🤖",
+    filename: __filename
+},
+async (conn, mek, m, { from, args, reply }) => {
+    try {
+        if (args.length === 0) return reply('Please provide a query.');
+
+        const query = args.join(' ');
+        await reply("_Processing Request_");
+
+        const response = await fetch(`https://api.vihangayt.com/ai/lalaland?q=${encodeURIComponent(query)}`);
+        const result = await response.json();
+
+        if (result.status && result.data) {
+            return await conn.sendMessage(from, { text: result.data }, { quoted: mek });
+        } else {
+            return reply('No valid response received.');
+        }
+    } catch (e) {
+        console.log(e);
+        return reply(`Error: ${e.message}`);
     }
 });
 

@@ -6,6 +6,7 @@ const axios = require('axios');
 let gis = require("g-i-s");
 const moment = require('moment-timezone')
 const yts = require('yt-search');
+const scraper = require("../lib/scraper");
 //-----------------------------------------------------------------Wiki-----------------------------------------------
 
 cmd({
@@ -63,7 +64,7 @@ const formatViews = (views) => {
     }
 };
 
-const thumbnailUrl = 'https://telegra.ph/file/bdc5a5b7af8bea3139d42.jpg';
+const thumbnailUrl = 'https://i.ibb.co/c1QBRbG/bot-logo.jpg';
 
 cmd({
     pattern: "yts",
@@ -105,6 +106,8 @@ async (conn, mek, m, { from, q, reply }) => {
         console.log(e);
     }
 });
+
+
 
 
 

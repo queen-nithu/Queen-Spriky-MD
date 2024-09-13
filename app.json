@@ -19,7 +19,7 @@
         "required": true
       },
       "BotNumber": {
-        "description": "Put the bot numberhere.",
+        "description": "Put the bot number here.",
         "required": true
       }
   },

@@ -222,9 +222,10 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     }
 });
 
+//Youtube Mp4
 cmd({
     pattern: "ytmp4",
-    desc: "download Instagram media",
+    desc: "Download Youtube Video",
     use: ".ytmp4 <url>",
     react: "📥",
     category: "download",
@@ -232,9 +233,32 @@ cmd({
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Instagram URL.");
+        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Youtube URL.");
         reply("Downloading...");
         const buff = await scraper.youtube(q);
+        await conn.sendMessage(from, { video: buff }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
+    } catch (e) {
+        console.log(e);
+        reply(`${e}`);
+    }
+});
+
+//Spotify Dl
+
+cmd({
+    pattern: "spotify",
+    desc: "Download Spotify Audio",
+    use: ".spotify <url>",
+    react: "📥",
+    category: "download",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Spotify URL.");
+        reply("Downloading...");
+        const buff = await scraper.spotify(q);
         await conn.sendMessage(from, { video: buff }, { quoted: mek });
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
