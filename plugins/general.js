@@ -186,6 +186,7 @@ async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sen
                     participant: m.quoted.sender
                 }
                 await conn.sendMessage(m.chat, { delete: key })
+                await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
 } catch (e) {
 reply('Error !!')
 l(e)

@@ -1,6 +1,6 @@
 {
-    "name": "Queen Spriky WhatsApp Bot",
-    "description": "Javascript WhatsApp bot made by Udavin Wijesundara",
+    "name": "Queen Spriky MD",
+    "description": "Queen Spriky MD by Udavin Wijesundara",
     "logo": "https://telegra.ph/file/f4af749bf80a481856828.jpg",
     "keywords": ["bot"],
     "success_url": "/",
@@ -8,6 +8,18 @@
     "env": {
       "SESSION_ID": {
         "description": "Put the session-id here.",
+        "required": true
+      },
+      "MONGODB": {
+        "description": "Put the mongodb url here.",
+        "required": true
+      },
+      "OwnerNumber": {
+        "description": "Put the owner number here.",
+        "required": true
+      },
+      "BotNumber": {
+        "description": "Put the bot numberhere.",
         "required": true
       }
   },

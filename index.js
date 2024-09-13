@@ -5,8 +5,11 @@ const {
   jidNormalizedUser,
   getContentType,
   fetchLatestBaileysVersion,
+  generateWAMessageFromContent,
+  prepareWAMessageMedia,
   Browsers
 } = require('@whiskeysockets/baileys');
+const {} = require('@whiskeysockets/baileys');
 
 const l = console.log
 const { getBuffer, getGroupAdmins } = require('./lib/functions');
@@ -18,6 +21,7 @@ const util = require('util');
 const { sms } = require('./lib/msg');
 const axios = require('axios');
 const { File } = require('megajs');
+const welcome = require('./plugins/welcome');
 
 const ownerNumber = [`${config.Owner}`];
 
@@ -102,6 +106,11 @@ const prefix = config.PREFIX
       await conn.readMessages([mek.key]);
     }
 
+    // Event: Participant joins or leaves
+        conn.ev.on('group-participants.update', async (update) => {
+          await welcome(conn, update);
+      });
+
     const m = sms(conn, mek)
     const type = getContentType(mek.message)
     const content = JSON.stringify(mek.message)
@@ -129,7 +138,98 @@ const prefix = config.PREFIX
     const reply = (teks) => {
     conn.sendMessage(from, { text: teks }, { quoted: mek })
     }
-    
+
+    //Button 
+
+    conn.sendButtonMessage = async (jid, buttons, opts = {}) => {
+
+      let header;
+      if (opts?.video) {
+          var video = await prepareWAMessageMedia({
+              video: {
+                  url: opts && opts.video ? opts.video : ''
+              }
+          }, {
+              upload: conn.waUploadToServer
+          })
+          header = {
+              title: opts && opts.header ? opts.header : '',
+              hasMediaAttachment: true,
+              videoMessage: video.videoMessage,
+          }
+
+      } else if (opts?.image) {
+          var image = await prepareWAMessageMedia({
+              image: {
+                  url: opts && opts.image ? opts.image : ''
+              }
+          }, {
+              upload: conn.waUploadToServer
+          })
+          header = {
+              title: opts && opts.header ? opts.header : '',
+              hasMediaAttachment: true,
+              imageMessage: image.imageMessage,
+          }
+
+      } else {
+          header = {
+              title: opts && opts.header ? opts.header : '',
+              hasMediaAttachment: false,
+          }
+      }
+      let interactiveMessage;
+      if (opts && opts.contextInfo) {
+          interactiveMessage = {
+              body: {
+                  text: opts && opts.body ? opts.body : ''
+              },
+              footer: {
+                  text: opts && opts.footer ? opts.footer : ''
+              },
+              header: header,
+              nativeFlowMessage: {
+                  buttons: buttons,
+                  messageParamsJson: ''
+              },
+              contextInfo: opts && opts.contextInfo ? opts.contextInfo : ''
+          }
+      } else {
+          interactiveMessage = {
+              body: {
+                  text: opts && opts.body ? opts.body : ''
+              },
+              footer: {
+                  text: opts && opts.footer ? opts.footer : ''
+              },
+              header: header,
+              nativeFlowMessage: {
+                  buttons: buttons,
+                  messageParamsJson: ''
+              }
+          }
+      }
+
+      let message = generateWAMessageFromContent(jid, {
+          viewOnceMessage: {
+              message: {
+                  messageContextInfo: {
+                      deviceListMetadata: {},
+                      deviceListMetadataVersion: 2,
+                  },
+                  interactiveMessage: interactiveMessage
+              }
+          }
+      }, {
+
+      })
+
+      return await conn.relayMessage(jid, message["message"], {
+          messageId: message.key.id
+      })
+  }
+
+    //=====================================================
 
     conn.sendFileUrl = async (jid, url, caption, quoted, options = {}) => {
       let mime = '';

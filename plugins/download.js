@@ -1,4 +1,5 @@
 const { cmd, commands } = require('../command');
+const scraper = require("../lib/scraper");
 const { tiktokdl } = require('@bochilteam/scraper');
 const getFbVideoInfo = require("fb-downloader-scrapper")
 const { getMoviesSearch } = require('sinhalasub.lk');
@@ -56,7 +57,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
         // Send Document File
         await conn.sendMessage(from, { document: { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'audio/mpeg', fileName:data.title + ".mp3"}, { quoted: mek });
-
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
         // Send Audio File
         //await conn.sendMessage(from, { audio: { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'audio/mpeg'},{ quoted: mek });
 
@@ -99,6 +100,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         let downloadUrl = down.dl_url;
         //Send As Document
         await conn.sendMessage(from, { document: { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'video/mp4', fileName:data.title + ".mp4" }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
         //Send As Video
         //await conn.sendMessage(from, { video : { url:downloadUrl }, caption: '*Queen Spriky MD*', mimetype: 'video/mp4'},{ quoted: mek });
 
@@ -136,6 +138,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
                 video: { url: videoLink },
                 caption: customCaption
             }, { quoted: mek });
+            await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
         } else {
             await reply('Failed to download the video. Please check the URL and try again.');
         }
@@ -175,16 +178,19 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
                     image: { url: fileData.download },
                     caption: customCaption
                 }, { quoted: m });
+                await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
             } else if (fileData.mimeType.startsWith('video/')) {
                 await conn.sendMessage(from, {
                     video: { url: fileData.download },
                     caption: customCaption
                 }, { quoted: m });
+                await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
             } else {
                 await conn.sendMessage(from, {
                     document: { url: fileData.download, mimetype: fileData.mimeType, fileName: fileData.fileName },
                     caption: customCaption
                 }, { quoted: mek });
+                await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
             }
         } else {
             await reply('Failed to download the file. Please check the URL and try again.');
@@ -195,28 +201,47 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     }
 });
 
-// Twitter DL (X)
-
 cmd({
-    pattern: "twitter",
-    desc: "download tw videos",
-    use: ".twitter <url>",
+    pattern: "insta",
+    desc: "download Instagram media",
+    use: ".insta <url>",
     react: "📥",
     category: "download",
     filename: __filename
 },
-async(conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Twitter URL.");  
-        let data = await fetchJson(`${baseUrl}/api/twitterdl?url=${q}`);
+        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Instagram URL.");
         reply("Downloading...");
-        await conn.sendMessage(from, { video: { url: data.data.data.HD }, mimetype: "video/mp4", caption: `- QUALITY HD\n*Queen Spriky MD*` }, { quoted: mek });
+        const buff = await scraper.instagram(q);
+        await conn.sendMessage(from, { video: buff }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
         reply(`${e}`);
     }
 });
 
+cmd({
+    pattern: "ytmp4",
+    desc: "download Instagram media",
+    use: ".ytmp4 <url>",
+    react: "📥",
+    category: "download",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Instagram URL.");
+        reply("Downloading...");
+        const buff = await scraper.youtube(q);
+        await conn.sendMessage(from, { video: buff }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
+    } catch (e) {
+        console.log(e);
+        reply(`${e}`);
+    }
+});
 
 //mediafire dl
 
@@ -244,6 +269,7 @@ async (conn, mek, m, {
             mimetype: data.data.file_type,
             caption: `*Queen Spriky MD*`
         }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
         reply(`${e.message || e}`);
@@ -281,6 +307,7 @@ async (conn, mek, m, {
             video: { url: videoUrl },
             caption: `*Queen Spriky MD*`
         }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
         reply(`${e.message || e}`);
@@ -322,6 +349,7 @@ async (conn, mek, m, {
             ptt: false,
             caption: `*Queen Spriky MD*`
         }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
         reply(`${e.message || e}`);
@@ -379,6 +407,7 @@ try {
         { document: data, mimetype: mimetype, fileName: file.name },
         { quoted: m, caption : '*Queen Spriky MD*' }
     );
+    await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
 } catch (error) {
     console.error('Error:', error.message);
     await reply(`Error: ${error.message}`);
@@ -430,6 +459,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
             },
             { quoted: mek }
         );
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (error) {
         console.error('Error downloading GitHub repository:', error);
         await reply(`❌ An error occurred: ${error.message}`);
@@ -475,6 +505,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
             },
             { quoted: mek }
         );
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
 
     } catch (error) {
         console.error('Error fetching movie details', error.message);
@@ -497,18 +528,18 @@ async (conn, mek, m, {
 }) => {
     try {
         if (!q) {
-            reply("Please provide a query to search for Pinterest images.");
+            reply("Please provide a query to search for images.");
             return;
         }
 
         let data = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/pinterest?q=${q}&apikey=Zexxabot`);
         
         if (data.status !== 200) {
-            reply("Failed to download Pinterest images.");
+            reply("Failed to download images.");
             return;
         }
 
-        reply("🧚 Downloading Pinterest images...");
+        reply("🧚 Downloading images...");
         
         for (let i = 0; i < data.result.length; i++) {
             await conn.sendMessage(from, {
@@ -516,6 +547,7 @@ async (conn, mek, m, {
                 caption: `*Queen Spriky MD*`
             }, { quoted: mek });
         }
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
         
     } catch (e) {
         console.log(e);
@@ -556,6 +588,7 @@ async (conn, mek, m, {
                 caption: `*Queen Spriky MD*`
             }, { quoted: mek });
         }
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
         
     } catch (e) {
         console.log(e);

@@ -116,6 +116,48 @@ async (conn, mek, m, {
     }
 });
 
+//-----------------------------------------------Group Name Change-----------------------------------------------
+
+cmd({
+    pattern: "gname",
+    desc: "Change the group name",
+    use: ".gname <New Group Name>",
+    react: "✏️",
+    category: "group",
+    filename: __filename
+},
+async (conn, mek, m, { from, isGroup, sender, groupMetadata, args, reply }) => {
+    // Check if the command is being used in a group
+    if (!isGroup) {
+        return await reply("_This command can only be used in groups._");
+    }
+
+    // Check if the bot is an admin in the group
+    const botNumber = conn.user.jid; // The bot's own number
+    const isBotAdmin = groupMetadata.participants.some(participant => participant.jid === botNumber && participant.admin);
+    
+    if (!isBotAdmin) {
+        return await reply("_I'm not an admin in this group._");
+    }
+
+    // Check if a new group name is provided
+    const newName = args.join(" ");
+    if (!newName) {
+        return await reply("_Please provide a new group name._");
+    }
+
+    try {
+        // Update the group name
+        await conn.groupUpdateSubject(from, newName);
+        return await reply(`_Group name changed to "${newName}" successfully!_`);
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
+    } catch (error) {
+        console.error('Error changing group name:', error);
+        return await reply("_Failed to change the group name. Please try again later._");
+    }
+});
+
+
 //---------------------------------------------Group Subject Change --------------------------------------------
 
 cmd({
@@ -141,12 +183,14 @@ async (conn, mek, m, {
         return await conn.sendMessage(from, {
             text: `Group subject has been updated to: ${newSubject}`
         }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
 
     } catch (e) {
         console.log(e);
         reply(`Error: ${e.message}`);
     }
 });
+
 
 //---------------------------------------------Tag All --------------------------------------------
 
@@ -174,6 +218,160 @@ async (conn, mek, m, {
     } catch (e) {
         console.log(e);
         return reply(`Error: ${e.message}`);
+    }
+});
+
+// Command to view pending join requests
+cmd({
+    pattern: "requests",
+    desc: "View pending join requests",
+    use: ".requests",
+    react: "📝",
+    category: "group",
+    filename: __filename
+},
+async (conn, mek, m, { from, isGroup, reply }) => {
+    // Check if the command is being used in a group
+    if (!isGroup) {
+        return await reply("_This command can only be used in groups._");
+    }
+
+    // Check if the bot is an admin in the group
+    const botNumber = conn.user.jid; // The bot's own number
+    const groupMetadata = await conn.groupMetadata(from);
+    const isBotAdmin = groupMetadata.participants.some(participant => participant.jid === botNumber && participant.admin);
+
+    if (!isBotAdmin) {
+        return await reply("_I'm not an admin in this group._");
+    }
+
+    try {
+        // Retrieve pending join requests
+        const requests = await conn.groupRequestParticipantsList(from);
+        if (requests.length === 0) {
+            return await reply("_No pending join requests._");
+        }
+
+        let msg = "_Pending Join Requests:_\n\n";
+        requests.forEach((request, index) => {
+            msg += `${index + 1}. @${request.jid.split("@")[0]}\n`;
+        });
+
+        // Send the list of pending join requests with mentions
+        return await reply(msg, { mentions: requests.map(r => r.jid) });
+    } catch (error) {
+        console.error('Error retrieving join requests:', error);
+        return await reply("_Failed to retrieve join requests. Please try again later._");
+    }
+});
+
+// Command to accept group join requests
+cmd({
+    pattern: "accept",
+    desc: "Accept group join request(s)",
+    use: ".accept <request numbers>",
+    react: "✔️",
+    category: "group",
+    filename: __filename
+},
+async (conn, mek, m, { from, isGroup, reply, match }) => {
+    // Check if the command is being used in a group
+    if (!isGroup) {
+        return await reply("_This command can only be used in groups._");
+    }
+
+    // Check if the bot is an admin in the group
+    const botNumber = conn.user.jid; // The bot's own number
+    const groupMetadata = await conn.groupMetadata(from);
+    const isBotAdmin = groupMetadata.participants.some(participant => participant.jid === botNumber && participant.admin);
+
+    if (!isBotAdmin) {
+        return await reply("_I'm not an admin in this group._");
+    }
+
+    try {
+        // Retrieve pending join requests
+        const requests = await conn.groupRequestParticipantsList(from);
+        if (requests.length === 0) {
+            return await reply("_No pending join requests._");
+        }
+
+        // Parse and validate the request numbers
+        if (!match) {
+            return await reply("_Provide the number(s) of the request(s) to accept, separated by commas._");
+        }
+
+        const indexes = match.split(",").map(num => parseInt(num.trim()) - 1);
+        const validIndexes = indexes.filter(index => index >= 0 && index < requests.length);
+
+        if (validIndexes.length === 0) {
+            return await reply("_Invalid request number(s)._");
+        }
+
+        // Accept the valid requests
+        for (let index of validIndexes) {
+            await conn.groupRequestParticipantsUpdate(from, [requests[index].jid], "accept");
+        }
+
+        return await reply(`_Accepted ${validIndexes.length} join request(s)._`);
+    } catch (error) {
+        console.error('Error accepting join requests:', error);
+        return await reply("_Failed to accept join requests. Please try again later._");
+    }
+});
+
+// Command to reject group join requests
+cmd({
+    pattern: "reject",
+    desc: "Reject group join request(s)",
+    use: ".reject <request numbers>",
+    react: "❌",
+    category: "group",
+    filename: __filename
+},
+async (conn, mek, m, { from, isGroup, reply, match }) => {
+    // Check if the command is being used in a group
+    if (!isGroup) {
+        return await reply("_This command can only be used in groups._");
+    }
+
+    // Check if the bot is an admin in the group
+    const botNumber = conn.user.jid; // The bot's own number
+    const groupMetadata = await conn.groupMetadata(from);
+    const isBotAdmin = groupMetadata.participants.some(participant => participant.jid === botNumber && participant.admin);
+
+    if (!isBotAdmin) {
+        return await reply("_I'm not an admin in this group._");
+    }
+
+    try {
+        // Retrieve pending join requests
+        const requests = await conn.groupRequestParticipantsList(from);
+        if (requests.length === 0) {
+            return await reply("_No pending join requests._");
+        }
+
+        // Parse and validate the request numbers
+        if (!match) {
+            return await reply("_Provide the number(s) of the request(s) to reject, separated by commas._");
+        }
+
+        const indexes = match.split(",").map(num => parseInt(num.trim()) - 1);
+        const validIndexes = indexes.filter(index => index >= 0 && index < requests.length);
+
+        if (validIndexes.length === 0) {
+            return await reply("_Invalid request number(s)._");
+        }
+
+        // Reject the valid requests
+        for (let index of validIndexes) {
+            await conn.groupRequestParticipantsUpdate(from, [requests[index].jid], "reject");
+        }
+
+        return await reply(`_Rejected ${validIndexes.length} join request(s)._`);
+    } catch (error) {
+        console.error('Error rejecting join requests:', error);
+        return await reply("_Failed to reject join requests. Please try again later._");
     }
 });
 
@@ -462,5 +660,45 @@ cmd({
     } catch (e) {
         console.log(e);
         reply(`Error: ${e}`);
+    }
+});
+
+// Command to create a poll
+cmd({
+    pattern: "poll",
+    desc: "Create a poll",
+    use: ".poll <Question> | <Option1> | <Option2> | ...",
+    react: "📊",
+    category: "group",
+    filename: __filename
+},
+async (conn, mek, m, { from, isGroup, reply, match }) => {
+    // Check if the command is being used in a group
+    if (!isGroup) {
+        return await reply("_This command can only be used in groups._");
+    }
+
+    // Split the input into question and options
+    const [question, ...options] = match.split("|").map(item => item.trim());
+
+    // Validate question and options
+    if (!question || options.length < 2) {
+        return await reply("_Usage: .poll <Question> | <Option1> | <Option2> | ..._");
+    }
+
+    // Create the poll object
+    const poll = {
+        name: question,
+        values: options,
+        selectableCount: 1,
+    };
+
+    try {
+        // Send the poll to the group
+        await conn.sendMessage(from, { poll });
+        return await reply("_Poll created successfully._");
+    } catch (error) {
+        console.error('Error creating poll:', error);
+        return await reply("_Failed to create poll. Please try again later._");
     }
 });
