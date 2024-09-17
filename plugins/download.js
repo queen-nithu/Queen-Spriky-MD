@@ -12,6 +12,7 @@ const { lookup } = require('mime-types');
 const fs = require('fs');
 const { File } = require('megajs');
 const path = require('path');
+const API = "https://astro-api-crqy.onrender.com/";
 
 
 // <========FETCH API URL========>
@@ -244,28 +245,29 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     }
 });
 
-//Spotify Dl
-
-cmd({
-    pattern: "spotify",
-    desc: "Download Spotify Audio",
-    use: ".spotify <url>",
+//Youtube Mp3
+/*cmd({
+    pattern: "ytmp3",
+    desc: "Download Youtube Video as MP3",
+    use: ".ytmp3 <url>",
     react: "📥",
     category: "download",
     filename: __filename
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Spotify URL.");
+        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Youtube URL.");
         reply("Downloading...");
-        const buff = await scraper.spotify(q);
-        await conn.sendMessage(from, { video: buff }, { quoted: mek });
-        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
+        const buff = await scraper.youtube(q);
+        if (buff) {
+            await conn.sendMessage(from, { audio: buff, mimetype: 'audio/mp3' }, { quoted: mek });
+        //await conn.sendMessage(from, { audio: buff }, { quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })}
     } catch (e) {
         console.log(e);
         reply(`${e}`);
     }
-});
+});*/
 
 //mediafire dl
 
@@ -302,84 +304,68 @@ async (conn, mek, m, {
 
 cmd({
     pattern: "tiktok",
-    desc: "Download TikTok videos using a URL.",
+    desc: "Download Tiktok Video",
     use: ".tiktok <url>",
     react: "📥",
     category: "download",
     filename: __filename
 },
-async (conn, mek, m, {
-    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
-}) => {
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        if (!q || !q.startsWith("https://")) {
-            reply("Please provide a valid TikTok URL.");
-            return;
-        }
-        let response = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/tiktok?url=${q}&apikey=Zexxabot`);
-
-        if (response.status !== 200) {
-            reply("Failed to download TikTok video.");
-            return;
-        }
-
-        let videoUrl = response.result.result.play;
-        let videoTitle = response.result.result.title;
-        
-        reply("📥 Downloading TikTok video...");
-        await conn.sendMessage(from, {
-            video: { url: videoUrl },
-            caption: `*Queen Spriky MD*`
-        }, { quoted: mek });
+        if (!q || !q.startsWith("https://")) return reply("Please provide a valid tiktok URL.");
+        reply("Downloading...");
+        const buff = await scraper.tiktok(q);
+        await conn.sendMessage(from, { video: buff }, { quoted: mek });
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
-        reply(`${e.message || e}`);
+        reply(`${e}`);
     }
 });
-
-//Tiktok Audio 
 
 cmd({
     pattern: "tiktokaudio",
-    desc: "Download TikTok audio using a URL.",
+    desc: "Download Tiktok Video",
     use: ".tiktokaudio <url>",
-    react: "🎶",
+    react: "📥",
     category: "download",
     filename: __filename
 },
-async (conn, mek, m, {
-    from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply
-}) => {
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        if (!q || !q.startsWith("https://")) {
-            reply("Please provide a valid TikTok URL.");
-            return;
-        }
-        let response = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/tiktok?url=${q}&apikey=Zexxabot`);
-
-        if (response.status !== 200) {
-            reply("Failed to download TikTok audio.");
-            return;
-        }
-
-        let audioUrl = response.result.result.music;
-        let audioTitle = response.result.result.music_info.title;
-        
-        reply("🎶 Downloading TikTok audio...");
-        await conn.sendMessage(from, {
-            audio: { url: audioUrl },
-            mimetype: 'audio/mp4',
-            ptt: false,
-            caption: `*Queen Spriky MD*`
-        }, { quoted: mek });
+        if (!q || !q.startsWith("https://")) return reply("Please provide a valid tiktok URL.");
+        reply("Downloading...");
+        const buff = await scraper.tiktok(q);
+        await conn.sendMessage(from, { audio: buff, caption: '*Queen Spriky MD*', mimetype: 'audio/mpeg'},{ quoted: mek });
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
-        reply(`${e.message || e}`);
+        reply(`${e}`);
     }
 });
 
+//Spotify Dl
+
+cmd({
+    pattern: "spotify",
+    desc: "Download Songs from Spotify",
+    use: ".spotify <url>",
+    react: "📥",
+    category: "download",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, q, reply }) => {
+    try {
+        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Spotify URL.");
+        reply("Downloading...");
+        const buff = await scraper.spotify(q);
+        await conn.sendMessage(from, { audio: buff, caption: '*Queen Spriky MD*', mimetype: 'audio/mpeg'},{ quoted: mek });
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } });
+    } catch (e) {
+        console.log(e);
+        reply(`Error: ${e.message}`);
+    }
+});
 
 //Mega Download
 
@@ -453,7 +439,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
     const regex = /(?:https|git)(?::\/\/|@)github\.com[\/:]([^\/:]+)\/(.+)/i;
 
     if (!args[0]) {
-        return reply(`Example usage: .gitclone https://github.com/BochilGaming/games-wabot`);
+        return reply(`Example usage: .gitclone https://github.com/uwtechshow-official/Queen-Spriky-MD`);
     }
 
     if (!regex.test(args[0])) {
@@ -555,29 +541,46 @@ async (conn, mek, m, {
             reply("Please provide a query to search for images.");
             return;
         }
-
-        let data = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/pinterest?q=${q}&apikey=Zexxabot`);
         
-        if (data.status !== 200) {
+        const trimmedQuery = q.trim();
+        const url = `https://api.giftedtechnexus.co.ke/api/search/pinterest?query=${encodeURIComponent(trimmedQuery)}&apikey=giftedtechk`;
+        const response = await axios.get(url, { responseType: "json" });
+        const data = response.data;
+
+        if (data.status !== 200 || !data.success) {
             reply("Failed to download images.");
             return;
         }
 
+        const images = data.results;
+
+        if (!images.length) {
+            reply("No images found.");
+            return;
+        }
+
         reply("🧚 Downloading images...");
-        
-        for (let i = 0; i < data.result.length; i++) {
+
+        const maxImages = 5;
+        const limitedImages = images.slice(0, maxImages); // Limit to 5 images
+
+        for (let imageUrl of limitedImages) {
             await conn.sendMessage(from, {
-                image: { url: data.result[i] },
+                image: { url: imageUrl },
                 caption: `*Queen Spriky MD*`
             }, { quoted: mek });
         }
-        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
-        
+
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } });
+
     } catch (e) {
         console.log(e);
         reply(`${e.message || e}`);
     }
 });
+
+
+
 
 //Pintrest Download
 cmd({

@@ -86,10 +86,10 @@ const prefix = config.PREFIX
       console.log('Plugins installed successfully ✅');
       console.log('Queen Spriky Is Connected To WhatsApp ✅');
 
-      let up = '*QUEEN SPRIKY MD CONNECTED SUCCESSFULLY ❤️*\n\nWhatsApp Group :\nhttps://chat.whatsapp.com/KQZ2CxCLL5D268bh6bmBMg\n\nGithub :https://github.com/uwtechshow-official/Queen-Spriky-MD\n\n`Developed By : Udavin`';
+      let up = 'QUEEN SPRIKY MD CONNECTED SUCCESSFULLY ❤️\n\nWhatsApp Group :\nhttps://chat.whatsapp.com/KQZ2CxCLL5D268bh6bmBMg\n\nGithub :https://github.com/uwtechshow-official/Queen-Spriky-MD\n\n`Developed By : Udavin`';
 
       conn.sendMessage(ownerNumber[0] + "@s.whatsapp.net", { 
-        image: { url: `https://telegra.ph/file/c9709034c54486a4b17e4.jpg` }, 
+        image: { url: 'https://telegra.ph/file/c9709034c54486a4b17e4.jpg' }, 
         caption: up 
       });
     }
@@ -252,11 +252,12 @@ const prefix = config.PREFIX
         return conn.sendMessage(jid, { audio: await getBuffer(url), caption: caption, mimetype: 'audio/mpeg', ...options }, { quoted: quoted, ...options });
       }
     };
+    
+    if(!isOwner && config.MODE === "private") return
+if(!isOwner && isGroup && config.MODE === "inbox") return
+if(!isOwner && !isGroup && config.MODE === "groups") return 
 
-      //Work Type
-      if(!isOwner && config.MODE === "private") return
-      if(!isOwner && isGroup && config.MODE === "inbox") return
-      if(!isOwner && !isGroup && config.MODE === "groups") return
+      
 
     const events = require('./command');
     const cmdName = isCmd ? body.slice(1).trim().split(" ")[0].toLowerCase() : false;
