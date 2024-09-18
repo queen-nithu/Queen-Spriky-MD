@@ -527,8 +527,8 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
 cmd({
     pattern: "img",
-    desc: "Download Pinterest images using a query.",
-    use: ".pinterest <query>",
+    desc: "Download images using a query.",
+    use: ".img <query>",
     react: "📥",
     category: "download",
     filename: __filename
@@ -584,7 +584,7 @@ async (conn, mek, m, {
 
 //Pintrest Download
 cmd({
-    pattern: "pinterest",
+    pattern: "pintrest",
     desc: "Download Pinterest images using a query.",
     use: ".pinterest <query>",
     react: "📥",
@@ -596,30 +596,43 @@ async (conn, mek, m, {
 }) => {
     try {
         if (!q) {
-            reply("Please provide a query to search for Pinterest images.");
+            reply("Please provide a query to search for images.");
+            return;
+        }
+        
+        const trimmedQuery = q.trim();
+        const url = `https://api.giftedtechnexus.co.ke/api/search/pinterest?query=${encodeURIComponent(trimmedQuery)}&apikey=giftedtechk`;
+        const response = await axios.get(url, { responseType: "json" });
+        const data = response.data;
+
+        if (data.status !== 200 || !data.success) {
+            reply("Failed to download images.");
             return;
         }
 
-        let data = await fetchJson(`https://spriky-api-bdefdab287d0.herokuapp.com/api/download/pinterest?q=${q}&apikey=Zexxabot`);
-        
-        if (data.status !== 200) {
-            reply("Failed to download Pinterest images.");
+        const images = data.results;
+
+        if (!images.length) {
+            reply("No images found.");
             return;
         }
 
-        reply("🧚 Downloading Pinterest images...");
-        
-        for (let i = 0; i < data.result.length; i++) {
+        reply("🧚 Downloading images...");
+
+        const maxImages = 5;
+        const limitedImages = images.slice(0, maxImages); // Limit to 5 images
+
+        for (let imageUrl of limitedImages) {
             await conn.sendMessage(from, {
-                image: { url: data.result[i] },
+                image: { url: imageUrl },
                 caption: `*Queen Spriky MD*`
             }, { quoted: mek });
         }
-        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
-        
+
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } });
+
     } catch (e) {
         console.log(e);
         reply(`${e.message || e}`);
     }
 });
-
