@@ -4,7 +4,6 @@ const fetch = require('node-fetch');
 const {fetchJson} = require('../lib/functions');
 const axios = require('axios');
 const cheerio = require("cheerio");
-//const { removeBg, shortenUrl, gtts } = require("../lib/");
 const scraper = require("../lib/scraper");
 const emailDataStore = {};
 
@@ -37,6 +36,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e.message}`);
     }
 });
@@ -73,6 +73,7 @@ async (conn, mek, m, {
         }
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e.message}`);
     }
 });
@@ -106,6 +107,7 @@ async (conn, mek, m, { from, args, reply }) => {
         }
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
@@ -133,6 +135,7 @@ async (conn, mek, m, {
         }, { quoted: mek });
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
@@ -165,6 +168,7 @@ async (conn, mek, m, { from, sender, reply }) => {
         }, { quoted: mek });
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply("Request Denied!");
     }
 });
@@ -198,6 +202,7 @@ async (conn, mek, m, { from, sender, reply }) => {
         }
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply("Request Denied!");
     }
 });
@@ -214,12 +219,13 @@ async (conn, mek, m, { from, sender, reply }) => {
     try {
         if (emailDataStore[sender]) {
             delete emailDataStore[sender];
-            return await conn.sendMessage(from, { text: "_Deleted the email address._" }, { quoted: mek });
+            return await conn.sendMessage(from, { text: "Deleted the email address." }, { quoted: mek });
         } else {
             return await conn.sendMessage(from, { text: "No email address to delete." }, { quoted: mek });
         }
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply("Request Denied!");
     }
 });
@@ -294,8 +300,216 @@ async (conn, mek, m, { from, args, reply }) => {
         }
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
+
+//Encode 
+
+cmd({
+    pattern: "encode",
+    desc: "Encode text to Base64",
+    react: "🔤",  
+    category: "tools",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if (!q) return reply("_Please provide text to encode._");
+        await reply("_Encoding..._");
+
+        let response = await fetch(`https://pure-badlands-26930-091903776676.herokuapp.com/misc/base64/encode?text=${encodeURIComponent(q)}`);
+        let data = await response.json();
+
+        if (data && data.result) {
+            await reply(`${data.result}`);
+        } else {
+            await reply("Failed to encode the text.");
+            await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        }
+    } catch (e) {
+        console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        reply(`${e}`);
+    }
+});
+
+
+//Decode 
+
+cmd({
+    pattern: "decode",
+    desc: "Decode Base64 text",
+    react: "🔡",  
+    category: "misc",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if (!q) return reply("_Please provide Base64 text to decode._");
+        await reply("Decoding...");
+        let response = await fetch(`https://pure-badlands-26930-091903776676.herokuapp.com/misc/base64/decode?text=${encodeURIComponent(q)}`);
+        let data = await response.json();
+        if (data && data.result) {
+            await reply(`${data.result}`);
+        } else {
+            await reply("Failed to decode the text.");
+            await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        }
+    } catch (e) {
+        console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        reply(`${e}`);
+    }
+});
+
+//npm search
+
+cmd({
+    pattern: "npmstalk",
+    desc: "Fetch NPM package details",
+    react: "📦",  
+    category: "tools",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if (!q) return reply("Please provide an NPM package name.");
+        await reply("_Fetching package details..._");
+        let response = await fetch(`https://pure-badlands-26930-091903776676.herokuapp.com/stalker/npm-package?package=${encodeURIComponent(q)}`);
+        let data = await response.json();
+        if (data && data.status === "success" && data.data) {
+            let packageInfo = data.data;
+            let message = `*NPM Package:* ${packageInfo.name}\n` +
+                          `*Version:* ${packageInfo.version}\n` +
+                          `*Description:* ${packageInfo.description}\n` +
+                          `*Author:* ${packageInfo.author}\n` +
+                          `*License:* ${packageInfo.license}\n` +
+                          `*Homepage:* ${packageInfo.homepage}\n` +
+                          `*Repository:* ${packageInfo.repository}\n` +
+                          `*Created At:* ${new Date(packageInfo.createdAt).toLocaleString()}\n` +
+                          `*Updated At:* ${new Date(packageInfo.updatedAt).toLocaleString()}\n` +
+                          `*Maintainers:* ${packageInfo.maintainers.join(', ')}\n\n` +
+                          `*Latest Versions:*\n${packageInfo.versions.slice(-5).join(", ")}\n*Queen Spriky MD*`;
+
+            await reply(message);
+        } else {
+            await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+            await reply("Failed to fetch the package details. Please check the package name.");
+        }
+    } catch (e) {
+        console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        reply(`${e}`);
+    }
+});
+
+//ip lookup
+
+cmd({
+    pattern: "iplookup",
+    desc: "Fetch IP location details",
+    react: "🌍",  
+    category: "misc",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if (!q) return reply("Please provide an IP address.");
+        await reply("Fetching IP details...");
+        let response = await fetch(`https://pure-badlands-26930-091903776676.herokuapp.com/stalker/ip?ip=${encodeURIComponent(q)}`);
+        let data = await response.json();
+        if (data && data.status === "success" && data.data) {
+            let ipInfo = data.data;
+            let message = `*IP Address:* ${ipInfo.ip}\n` +
+                          `*Latitude:* ${ipInfo.location.latitude}\n` +
+                          `*Longitude:* ${ipInfo.location.longitude}\n*Queen Spriky MD*`;
+
+            await reply(message);
+        } else {
+            await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+            await reply("Failed to fetch IP details. Please check the IP address.");
+        }
+    } catch (e) {
+        console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        reply(`${e}`);
+    }
+});
+
+//Insta User Search
+
+cmd({
+    pattern: "instastalk",
+    desc: "Fetch Instagram user details",
+    react: "📸",  
+    category: "social",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if (!q) return reply("Please provide an Instagram username.");
+        await reply("Fetching Instagram user details...");
+        let response = await fetch(`https://pure-badlands-26930-091903776676.herokuapp.com/stalker/instauser?username=${encodeURIComponent(q)}`);
+        let data = await response.json();
+        if (data && data.status === "200" && data.data) {
+            let userInfo = data.data;
+            let caption = `*Username:* ${userInfo.username}\n` +
+                          `*Name:* ${userInfo.name}\n` +
+                          `*Biography:* ${userInfo.biography}\n` +
+                          `*Posts:* ${userInfo.posts}\n` +
+                          `*Followers:* ${userInfo.followers}\n` +
+                          `*Following:* ${userInfo.following}\n*Queen Spriky MD*`;
+            await conn.sendMessage(from, { image: { url: userInfo.profile_picture }, caption: caption }, { quoted: mek });
+        } else {
+            await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+            await reply("Failed to fetch Instagram user details. Please check the username.");
+        }
+    } catch (e) {
+        console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        reply(`${e}`);
+    }
+});
+
+//Github User Search
+
+cmd({
+    pattern: "githubuser",
+    desc: "Fetch GitHub user details",
+    react: "🐙",  
+    category: "tools",
+    filename: __filename
+},
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        if (!q) return reply("Please provide a GitHub username.");
+        await reply("Fetching GitHub user details...");
+        let response = await fetch(`https://pure-badlands-26930-091903776676.herokuapp.com/stalker/gituser?username=${encodeURIComponent(q)}`);
+        let data = await response.json();
+        if (data && data.status === "success" && data.data) {
+            let userInfo = data.data;
+            let caption = `*Username:* ${userInfo.login}\n` +
+                          `*Name:* ${userInfo.name}\n` +
+                          `*Bio:* ${userInfo.bio}\n` +
+                          `*Location:* ${userInfo.location}\n` +
+                          `*Public Repos:* ${userInfo.publicRepos}\n` +
+                          `*Followers:* ${userInfo.followers}\n` +
+                          `*Following:* ${userInfo.following}\n` +
+                          `*Profile:* ${userInfo.htmlUrl}\n*Queen Spriky MD*`;
+            await conn.sendMessage(from, { image: { url: userInfo.avatarUrl }, caption: caption }, { quoted: mek });
+        } else {
+            await reply("Failed to fetch GitHub user details. Please check the username.");
+            await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        }
+    } catch (e) {
+        console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
+        reply(`${e}`);
+    }
+});
+
+
 
 

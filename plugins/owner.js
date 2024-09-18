@@ -21,6 +21,7 @@ async (conn, mek, m, {
         }, { quoted: mek });
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
@@ -47,6 +48,7 @@ async (conn, mek, m, {
         return await reply('Profile bio updated successfully.');
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
@@ -70,6 +72,7 @@ try{
         .then((res) => reply("🟩Joined Group"))
         .catch((err) => reply("Error in Joining Group"));
 } catch (e) {
+    await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
 reply('Error !!')
 l(e)
 }
@@ -94,6 +97,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         }, { quoted: mek });
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e}`);
     }
 })

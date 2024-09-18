@@ -28,6 +28,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        return await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e.message}`);
     }
 });
@@ -58,6 +59,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        return await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e.message}`);
     }
 });
@@ -88,6 +90,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        return await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e.message}`);
     }
 });
@@ -112,6 +115,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        return await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e.message}`);
     }
 });
@@ -127,33 +131,27 @@ cmd({
     filename: __filename
 },
 async (conn, mek, m, { from, isGroup, sender, groupMetadata, args, reply }) => {
-    // Check if the command is being used in a group
     if (!isGroup) {
-        return await reply("_This command can only be used in groups._");
+        return await reply("This command can only be used in groups.");
     }
-
-    // Check if the bot is an admin in the group
-    const botNumber = conn.user.jid; // The bot's own number
+    const botNumber = conn.user.jid;
     const isBotAdmin = groupMetadata.participants.some(participant => participant.jid === botNumber && participant.admin);
     
     if (!isBotAdmin) {
-        return await reply("_I'm not an admin in this group._");
+        return await reply("I'm not an admin in this group.");
     }
-
-    // Check if a new group name is provided
     const newName = args.join(" ");
     if (!newName) {
-        return await reply("_Please provide a new group name._");
+        return await reply("Please provide a new group name.");
     }
-
     try {
-        // Update the group name
         await conn.groupUpdateSubject(from, newName);
-        return await reply(`_Group name changed to "${newName}" successfully!_`);
+        return await reply(`Group name changed to "${newName}" successfully!`);
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (error) {
         console.error('Error changing group name:', error);
-        return await reply("_Failed to change the group name. Please try again later._");
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
+        return await reply("Failed to change the group name. Please try again later.");
     }
 });
 
@@ -187,6 +185,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e.message}`);
     }
 });
@@ -217,6 +216,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
@@ -231,37 +231,31 @@ cmd({
     filename: __filename
 },
 async (conn, mek, m, { from, isGroup, reply }) => {
-    // Check if the command is being used in a group
     if (!isGroup) {
-        return await reply("_This command can only be used in groups._");
+        return await reply("This command can only be used in groups.");
     }
-
-    // Check if the bot is an admin in the group
-    const botNumber = conn.user.jid; // The bot's own number
+    const botNumber = conn.user.jid;
     const groupMetadata = await conn.groupMetadata(from);
     const isBotAdmin = groupMetadata.participants.some(participant => participant.jid === botNumber && participant.admin);
 
     if (!isBotAdmin) {
-        return await reply("_I'm not an admin in this group._");
+        return await reply("I'm not an admin in this group.");
     }
 
     try {
-        // Retrieve pending join requests
         const requests = await conn.groupRequestParticipantsList(from);
         if (requests.length === 0) {
-            return await reply("_No pending join requests._");
+            return await reply("No pending join requests.");
         }
 
-        let msg = "_Pending Join Requests:_\n\n";
+        let msg = "Pending Join Requests:\n\n";
         requests.forEach((request, index) => {
             msg += `${index + 1}. @${request.jid.split("@")[0]}\n`;
         });
-
-        // Send the list of pending join requests with mentions
         return await reply(msg, { mentions: requests.map(r => r.jid) });
     } catch (error) {
         console.error('Error retrieving join requests:', error);
-        return await reply("_Failed to retrieve join requests. Please try again later._");
+        return await reply("Failed to retrieve join requests. Please try again later.");
     }
 });
 
@@ -277,46 +271,36 @@ cmd({
 async (conn, mek, m, { from, isGroup, reply, match }) => {
     // Check if the command is being used in a group
     if (!isGroup) {
-        return await reply("_This command can only be used in groups._");
+        return await reply("This command can only be used in groups.");
     }
-
-    // Check if the bot is an admin in the group
-    const botNumber = conn.user.jid; // The bot's own number
+    const botNumber = conn.user.jid;
     const groupMetadata = await conn.groupMetadata(from);
     const isBotAdmin = groupMetadata.participants.some(participant => participant.jid === botNumber && participant.admin);
 
     if (!isBotAdmin) {
         return await reply("_I'm not an admin in this group._");
     }
-
     try {
-        // Retrieve pending join requests
         const requests = await conn.groupRequestParticipantsList(from);
         if (requests.length === 0) {
-            return await reply("_No pending join requests._");
+            return await reply("No pending join requests.");
         }
-
-        // Parse and validate the request numbers
         if (!match) {
             return await reply("_Provide the number(s) of the request(s) to accept, separated by commas._");
         }
-
         const indexes = match.split(",").map(num => parseInt(num.trim()) - 1);
         const validIndexes = indexes.filter(index => index >= 0 && index < requests.length);
-
         if (validIndexes.length === 0) {
             return await reply("_Invalid request number(s)._");
         }
-
-        // Accept the valid requests
         for (let index of validIndexes) {
             await conn.groupRequestParticipantsUpdate(from, [requests[index].jid], "accept");
         }
-
         return await reply(`_Accepted ${validIndexes.length} join request(s)._`);
     } catch (error) {
         console.error('Error accepting join requests:', error);
-        return await reply("_Failed to accept join requests. Please try again later._");
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
+        return await reply("Failed to accept join requests. Please try again later.");
     }
 });
 
@@ -330,30 +314,24 @@ cmd({
     filename: __filename
 },
 async (conn, mek, m, { from, isGroup, reply, match }) => {
-    // Check if the command is being used in a group
     if (!isGroup) {
-        return await reply("_This command can only be used in groups._");
+        return await reply("This command can only be used in groups.");
     }
-
-    // Check if the bot is an admin in the group
-    const botNumber = conn.user.jid; // The bot's own number
+    const botNumber = conn.user.jid;
     const groupMetadata = await conn.groupMetadata(from);
     const isBotAdmin = groupMetadata.participants.some(participant => participant.jid === botNumber && participant.admin);
 
     if (!isBotAdmin) {
-        return await reply("_I'm not an admin in this group._");
+        return await reply("I'm not an admin in this group.");
     }
 
     try {
-        // Retrieve pending join requests
         const requests = await conn.groupRequestParticipantsList(from);
         if (requests.length === 0) {
-            return await reply("_No pending join requests._");
+            return await reply("No pending join requests.");
         }
-
-        // Parse and validate the request numbers
         if (!match) {
-            return await reply("_Provide the number(s) of the request(s) to reject, separated by commas._");
+            return await reply("Provide the number(s) of the request(s) to reject, separated by commas.");
         }
 
         const indexes = match.split(",").map(num => parseInt(num.trim()) - 1);
@@ -362,8 +340,6 @@ async (conn, mek, m, { from, isGroup, reply, match }) => {
         if (validIndexes.length === 0) {
             return await reply("_Invalid request number(s)._");
         }
-
-        // Reject the valid requests
         for (let index of validIndexes) {
             await conn.groupRequestParticipantsUpdate(from, [requests[index].jid], "reject");
         }
@@ -371,7 +347,8 @@ async (conn, mek, m, { from, isGroup, reply, match }) => {
         return await reply(`_Rejected ${validIndexes.length} join request(s)._`);
     } catch (error) {
         console.error('Error rejecting join requests:', error);
-        return await reply("_Failed to reject join requests. Please try again later._");
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
+        return await reply("Failed to reject join requests. Please try again later.");
     }
 });
 
@@ -401,6 +378,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
@@ -460,6 +438,7 @@ async (conn, mek, m, {
         reply(`${user} has been kicked out of the group!`);
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply('Error occurred while trying to kick the user.');
     }
 });
@@ -487,6 +466,7 @@ async (conn, mek, m, { from, prefix, l, quoted, body, isCmd, command, args, q, i
 
         await conn.sendMessage(from, { text: 'Done' }, { quoted: mek }); 
     } catch (e) {
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply('Error !!');
         l(e);
     }
@@ -516,6 +496,7 @@ cmd({
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e}`);
     }
 });
@@ -540,6 +521,7 @@ cmd({
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e}`);
     }
 });
@@ -563,6 +545,7 @@ cmd({
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e}`);
     }
 });
@@ -587,6 +570,7 @@ cmd({
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e}`);
     }
 });
@@ -611,6 +595,7 @@ cmd({
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e}`);
     }
 });
@@ -630,15 +615,11 @@ cmd({
         if (!isAdmins) return reply("You must be an admin to use this command.");
 
         const groupJid = mek.key.remoteJid;
-
-        // Get the list of participants who requested to join
         const response = await conn.groupRequestParticipantsList(groupJid);
         
         if (response.length === 0) {
             return reply("No participants are in the waiting list.");
         }
-
-        // Filter users with +94 country code
         const toAddUsers = response.filter(user => user.jid.startsWith(config.AUTO_ADD_Country_Code));
 
         if (toAddUsers.length === 0) {
@@ -646,8 +627,6 @@ cmd({
         }
 
         const userJids = toAddUsers.map(user => user.jid);
-
-        // Approve the +94 users
         const approveResponse = await conn.groupRequestParticipantsUpdate(
             groupJid, 
             userJids,
@@ -659,6 +638,7 @@ cmd({
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e}`);
     }
 });
@@ -673,17 +653,12 @@ cmd({
     filename: __filename
 },
 async (conn, mek, m, { from, isGroup, reply, match }) => {
-    // Check if the command is being used in a group
     if (!isGroup) {
-        return await reply("_This command can only be used in groups._");
+        return await reply("This command can only be used in groups.");
     }
-
-    // Split the input into question and options
     const [question, ...options] = match.split("|").map(item => item.trim());
-
-    // Validate question and options
     if (!question || options.length < 2) {
-        return await reply("_Usage: .poll <Question> | <Option1> | <Option2> | ..._");
+        return await reply("Usage: .poll <Question> | <Option1> | <Option2> | ...");
     }
 
     // Create the poll object
@@ -694,11 +669,11 @@ async (conn, mek, m, { from, isGroup, reply, match }) => {
     };
 
     try {
-        // Send the poll to the group
         await conn.sendMessage(from, { poll });
-        return await reply("_Poll created successfully._");
+        return await reply("Poll created successfully.");
     } catch (error) {
         console.error('Error creating poll:', error);
-        return await reply("_Failed to create poll. Please try again later._");
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
+        return await reply("Failed to create poll. Please try again later.");
     }
 });

@@ -31,6 +31,7 @@ async (conn, mek, m, { from, args, reply }) => {
         }
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
@@ -104,6 +105,7 @@ async (conn, mek, m, { from, q, reply }) => {
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
     }
 });
 

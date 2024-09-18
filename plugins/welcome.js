@@ -8,7 +8,6 @@ module.exports = async (client, update) => {
     const groupName = metadata.subject;
 
     if (update.participants.length > 0) {
-        // Separate participants into 'added' and 'removed'
         const addedParticipants = [];
         const removedParticipants = [];
 

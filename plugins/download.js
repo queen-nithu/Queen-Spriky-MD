@@ -64,6 +64,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
     } catch (e) {
         console.error(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply('An error occurred while processing your request.');
     }
 });
@@ -107,6 +108,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
     } catch (e) {
         console.error(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply('An error occurred while processing your request.');
     }
 });
@@ -145,6 +147,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         }
     } catch (error) {
         console.error('Error downloading Facebook video:', error);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         await reply('An error occurred while downloading the video. Please try again later.');
     }
 });
@@ -198,6 +201,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         }
     } catch (error) {
         console.error('Error downloading Google Drive file:', error);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         await reply('An error occurred while downloading the file. Please try again later.');
     }
 });
@@ -219,6 +223,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e}`);
     }
 });
@@ -241,33 +246,10 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e}`);
     }
 });
-
-//Youtube Mp3
-/*cmd({
-    pattern: "ytmp3",
-    desc: "Download Youtube Video as MP3",
-    use: ".ytmp3 <url>",
-    react: "📥",
-    category: "download",
-    filename: __filename
-},
-async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
-    try {
-        if (!q || !q.startsWith("https://")) return reply("Please provide a valid Youtube URL.");
-        reply("Downloading...");
-        const buff = await scraper.youtube(q);
-        if (buff) {
-            await conn.sendMessage(from, { audio: buff, mimetype: 'audio/mp3' }, { quoted: mek });
-        //await conn.sendMessage(from, { audio: buff }, { quoted: mek });
-        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })}
-    } catch (e) {
-        console.log(e);
-        reply(`${e}`);
-    }
-});*/
 
 //mediafire dl
 
@@ -298,6 +280,7 @@ async (conn, mek, m, {
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e.message || e}`);
     }
 });
@@ -319,6 +302,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e}`);
     }
 });
@@ -340,6 +324,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e}`);
     }
 });
@@ -363,6 +348,7 @@ async (conn, mek, m, { from, quoted, body, q, reply }) => {
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } });
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`Error: ${e.message}`);
     }
 });
@@ -420,6 +406,7 @@ try {
     await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
 } catch (error) {
     console.error('Error:', error.message);
+    await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
     await reply(`Error: ${error.message}`);
 }
 });
@@ -472,6 +459,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (error) {
         console.error('Error downloading GitHub repository:', error);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         await reply(`❌ An error occurred: ${error.message}`);
     }
 });
@@ -519,6 +507,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
     } catch (error) {
         console.error('Error fetching movie details', error.message);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         await reply('An error occurred while fetching');
     }
 });
@@ -559,7 +548,7 @@ async (conn, mek, m, {
             return;
         }
 
-        reply("🧚 Downloading images...");
+        reply("Downloading images...");
 
         const maxImages = 5;
         const limitedImages = images.slice(0, maxImages); // Limit to 5 images
@@ -575,6 +564,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e.message || e}`);
     }
 });
@@ -633,6 +623,7 @@ async (conn, mek, m, {
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e.message || e}`);
     }
 });

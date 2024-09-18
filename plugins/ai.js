@@ -1,7 +1,7 @@
 const config = require('../config');
 const { cmd, commands } = require('../command');
 const fetch = require('node-fetch');
-const {fetchJson} = require('../lib/functions');
+const {fetchJson,toPTT} = require('../lib/functions');
 const axios = require('axios');
 const scraper = require("../lib/scraper");
 //-----------------------------------------------AI Chat-----------------------------------------------
@@ -20,6 +20,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });
@@ -102,6 +103,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
     } catch (e) {
         console.error(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply('An error occurred while processing your request.');
     }
 });
@@ -131,6 +133,7 @@ async (conn, mek, m, { from, args, reply }) => {
         }
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         return reply(`Error: ${e.message}`);
     }
 });

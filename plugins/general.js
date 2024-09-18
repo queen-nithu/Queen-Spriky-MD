@@ -49,6 +49,7 @@ async (conn, mek, m, {
         return await conn.edit(ping, '*Pong*\n *' + (final - inital) + ' ms* ')
     } catch (e) {
         reply('*Error !!*')
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         console.log(e)
     }
 })
@@ -71,6 +72,7 @@ exec("pm2 restart all")
 }catch(e){
 console.log(e)
 reply(`${e}`)
+await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
 }
 })
 
@@ -170,6 +172,7 @@ ${menu.random}
 
     } catch (e) {
         console.log(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply(`${e}`);
     }
 });
@@ -193,6 +196,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         return reply(status);
     } catch (e) {
         console.error(e);
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         await reply(`❌ An error occurred: ${e.message}`);
     }
 });
@@ -218,6 +222,7 @@ async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sen
                 await conn.sendMessage(m.chat, { delete: key })
                 await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
 } catch (e) {
+    await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
 reply('Error !!')
 l(e)
 }
@@ -235,8 +240,10 @@ cmd({
 async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isSachintha, isSavi, isSadas, isMani, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
         const chatJid = from;
-        reply(`JID of this chat is: ${chatJid}`);
+        reply(`${chatJid}`);
+        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } })
     } catch (e) {
+        await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
         reply('Error while retrieving the JID!');
         l(e);
     }

@@ -13,6 +13,7 @@ try{
 
 }catch(e){
     console.log(e)
+    await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
     reply(`${e}`)
     }
     })*/
@@ -41,6 +42,7 @@ ${config.PREFIX}
 
 }catch(e){
     console.log(e)
+    await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
     reply(`${e}`)
     }
     })*/
